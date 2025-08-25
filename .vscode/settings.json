@@ -1,0 +1,12 @@
+{
+  "cSpell.words": [
+    "pressbutton"
+  ],
+  "typescript.suggest.autoImports": true,
+  "javascript.suggest.autoImports": true,
+    // 延迟时间（单位 ms，默认 ~1500ms）
+  "github.copilot.voice.silenceDelay": 4000,
+
+  // 关闭自动发送
+  "github.copilot.voice.autoSend": false
+}

@@ -1,0 +1,65 @@
+{
+  "compilerOptions": {
+    /* ====== 运行时/模块相关（保持 Next.js 兼容）====== */
+    "target": "ES2022",                 // 输出 JS 版本（现代浏览器友好）
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
+    "module": "ESNext",                 // 保持为 ES 模块，交给 Next 构建
+    "moduleResolution": "Bundler",      // TS5+ 对前端项目推荐的解析策略
+    "jsx": "preserve",                  // 保留 JSX，由 Next 处理
+
+    "noEmit": true,                     // 不输出编译产物（Next 会处理）
+    "incremental": true,                // 开启增量编译，加快二次构建
+    "isolatedModules": true,            // Next/SWC 要求：每文件可独立编译
+
+    "esModuleInterop": true,            // 兼容 CJS 的默认导入
+    "allowJs": false,                   // 推荐全量 TS；如需迁移可改为 true
+    "resolveJsonModule": true,          // 允许 import JSON
+
+    // ✅ 新增：配合 "Bundler" 解析的推荐项，严控 import 语义
+    "verbatimModuleSyntax": true,       // 只允许 `import type` 搭配类型导入
+
+    /* ====== 路径别名（你已采用 src 作为根）====== */
+    "baseUrl": "src",                   // 这样 `@/` 就等于从 src/ 起跳
+    "paths": {
+      "@/*": ["*"]                      // "@/x" -> "src/x"
+    },
+
+    /* ====== 严格模式（保证质量，贴近企业默认）====== */
+    "strict": true,                     // 打开所有严格检查
+    "noImplicitAny": true,              // 禁止隐式 any
+    "strictNullChecks": true,
+    "strictBindCallApply": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,               // 跳过 d.ts 检查，提升速度
+
+    // ✅ 新增：更“严格”的类型约束（建议逐步上车）
+    "noUncheckedIndexedAccess": true,   // 索引访问也带上 |undefined
+    "noPropertyAccessFromIndexSignature": true,
+    "exactOptionalPropertyTypes": true, // 可选属性的 “可选” 更严格
+    "noImplicitOverride": true,         // 派生类重写必须写 override
+    "useUnknownInCatchVariables": true, // catch(e) 默认 unknown
+    "importsNotUsedAsValues": "error",  // 仅类型导入必须用 import type
+    "noFallthroughCasesInSwitch": true, // switch case 禁止贯穿
+
+    /* ====== 类型环境 ====== */
+    "types": ["node"],                  // Node 类型（工具脚本/配置文件用）
+    "plugins": [{ "name": "next" }]
+  },
+
+  /* ====== 包含/排除范围 ====== */
+  "include": [
+    "next-env.d.ts",
+    "next.config.ts",
+    "postcss.config.js",
+    "tailwind.config.ts",
+    "src/**/*",
+    ".next/types/**/*.ts"               // Next 生成的类型
+  ],
+  "exclude": [
+    "node_modules",
+    ".next",
+    "dist",
+    "coverage"
+  ]
+}
