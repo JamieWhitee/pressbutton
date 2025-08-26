@@ -15,4 +15,4 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(() => prisma.$disconnect());  // 注意：不是 async 回调
+  .finally(() => prisma.$disconnect()); // 注意：不是 async 回调

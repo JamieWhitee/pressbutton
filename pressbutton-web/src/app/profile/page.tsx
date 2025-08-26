@@ -166,39 +166,88 @@ export default function ProfilePage() {
           <div style={{
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'space-between',
             marginBottom: '20px'
           }}>
             <div style={{
-              width: '80px',
-              height: '80px',
-              background: 'linear-gradient(135deg, #e91e63, #9c27b0)',
-              borderRadius: '50%',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '2rem',
-              color: 'white',
-              marginRight: '20px'
+              alignItems: 'center'
             }}>
-              👤
-            </div>
-            <div>
-              {/* TODO: Replace with real user data from API */}
-              {/* API endpoint: GET /api/users/profile */}
-              <h1 style={{
+              <div style={{
+                width: '80px',
+                height: '80px',
+                background: 'linear-gradient(135deg, #e91e63, #9c27b0)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 fontSize: '2rem',
-                fontWeight: 'bold',
-                color: '#333',
-                marginBottom: '5px'
+                color: 'white',
+                marginRight: '20px'
               }}>
-                Username
-              </h1>
-              <p style={{
-                color: '#666',
-                fontSize: '1.1rem'
+                👤
+              </div>
+              <div>
+                {/* TODO: Replace with real user data from API */}
+                {/* API endpoint: GET /api/users/profile */}
+                <h1 style={{
+                  fontSize: '2rem',
+                  fontWeight: 'bold',
+                  color: '#333',
+                  marginBottom: '5px'
+                }}>
+                  Username
+                </h1>
+                <p style={{
+                  color: '#666',
+                  fontSize: '1.1rem'
+                }}>
+                  Member since January 2024
+                </p>
+              </div>
+            </div>
+
+            {/* Create Question Button - Top Right Position */}
+            <div style={{
+              padding: '20px',
+              border: '2px dashed rgba(233, 30, 99, 0.3)',
+              borderRadius: '15px',
+              backgroundColor: 'rgba(233, 30, 99, 0.05)',
+              textAlign: 'center',
+              minWidth: '200px'
+            }}>
+              <h3 style={{
+                margin: '0 0 10px 0',
+                fontSize: '1.1rem',
+                color: '#333'
               }}>
-                Member since January 2024
-              </p>
+                🔴 Ready to create a dilemma?
+              </h3>
+              <button
+                onClick={() => router.push('/questions/create')}
+                style={{
+                  background: 'linear-gradient(135deg, #e91e63, #9c27b0, #ff9800)',
+                  border: 'none',
+                  borderRadius: '25px',
+                  padding: '12px 24px',
+                  color: 'white',
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 12px rgba(233, 30, 99, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.boxShadow = '0 6px 18px rgba(233, 30, 99, 0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(233, 30, 99, 0.3)';
+                }}
+              >
+                Create New Question
+              </button>
             </div>
           </div>
 
@@ -259,6 +308,7 @@ export default function ProfilePage() {
           }}>
             Recent Activity
           </h2>
+
           {/* TODO: Replace with real user activity data from API */}
           {/* API endpoints:
                - GET /api/users/{userId}/questions (user's created questions)

@@ -31,7 +31,7 @@ npm install @mantine/core @mantine/hooks
 **🎯 Where designers get ideas:**
 - **Dribbble.com** - Premium designs, UI patterns
 - **Behance.net** - Adobe's creative community
-- **UI Movement** - Mobile/web UI inspiration  
+- **UI Movement** - Mobile/web UI inspiration
 - **Mobbin.com** - Real app screenshots organized by category
 - **Land-book.com** - Landing page gallery
 - **Awwwards.com** - Award-winning websites
@@ -54,7 +54,7 @@ npm install @mantine/core @mantine/hooks
 // Your current palette analysis:
 const yourColors = {
   primary: '#e91e63',    // Material Pink 500 (energetic, friendly)
-  secondary: '#9c27b0',  // Material Purple 500 (creative, premium)  
+  secondary: '#9c27b0',  // Material Purple 500 (creative, premium)
   accent: '#ff9800'      // Material Orange 500 (optimistic, warm)
 }
 
@@ -72,7 +72,7 @@ const yourColors = {
 font-family: 'Inter', 'Roboto', /* Fallback to system fonts below */
 
 /* 2. System fonts (fastest loading, native feel) */
-font-family: 
+font-family:
   'SF Pro Display',     /* Apple devices */
   'Segoe UI',          /* Windows */
   'Roboto',            /* Android */
