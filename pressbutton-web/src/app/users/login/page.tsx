@@ -94,68 +94,21 @@ export default function LoginPage() {
             autoComplete="current-password"
             {...register("password")}
           />
-          <button
+          <Button
             type="submit"
-            disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '15px',
-              borderRadius: '25px',
-              border: 'none',
-              background: 'linear-gradient(135deg, #e91e63, #9c27b0, #ff9800)',
-              color: 'white',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              transform: isLoading ? 'scale(1)' : 'scale(1)',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
-              marginBottom: '10px'
-            }}
-            onMouseEnter={(e) => {
-              if (!isLoading) {
-                e.currentTarget.style.transform = 'scale(1.05)';
-                e.currentTarget.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.3)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isLoading) {
-                e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2)';
-              }
-            }}
+            variant="primary"
+            isLoading={isLoading}
+            style={{ marginBottom: '10px' }}
           >
-            {isLoading ? 'Logging in...' : 'Login'}
-          </button>
-          <button
+            Login
+          </Button>
+          <Button
             type="button"
+            variant="secondary"
             onClick={() => router.push('/users/register')}
-            style={{
-              width: '100%',
-              padding: '15px',
-              borderRadius: '25px',
-              border: '2px solid #e91e63',
-              background: 'transparent',
-              color: '#e91e63',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              boxShadow: 'none'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#e91e63';
-              e.currentTarget.style.color = 'white';
-              e.currentTarget.style.transform = 'scale(1.05)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = '#e91e63';
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
           >
             Create Account
-          </button>
+          </Button>
         </form>
       </div>
     </div>

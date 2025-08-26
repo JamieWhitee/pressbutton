@@ -1,57 +1,99 @@
-import React from "react";
+import React from 'react';
+import { designTokens, buttonStyles } from '../styles/designTokens';
 
-/**
- * Basic reusable Button component for forms and actions.
- * Keep it simple and let specific pages handle custom styling via style prop or className.
- *
- * Props:
- * - type: button type ("button", "submit", "reset")
- * - children: button content (usually text)
- * - loading: optional, shows loading state
- * - disabled: optional, disables the button
- * - className: optional, for custom Tailwind or CSS classes
- * - style: optional, for inline styles (use this for specific page designs)
- * - ...rest: any other button props (onClick, etc.)
- */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  loading?: boolean;
+  children: React.ReactNode;
+  variant?: 'primary' | 'secondary';
+  isLoading?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({
-  type = "button",
+/**
+ * Professional Button component using design tokens
+ *
+ * Features:
+ * - Consistent styling using design system
+ * - Smooth hover animations with professional easing curves
+ * - Loading states with proper accessibility
+ * - Built-in responsive behavior
+ *
+ * @param variant - 'primary' for main actions, 'secondary' for alternative actions
+ * @param isLoading - Shows loading state and disables interaction
+ */
+export default function Button({
   children,
-  loading = false,
+  variant = 'primary',
+  isLoading = false,
   disabled,
-  className = "",
   style,
-  ...rest
-}) => {
-  // Basic default styles - can be overridden by className or style prop
-  const defaultStyle: React.CSSProperties = {
-    padding: '12px 20px',
-    borderRadius: '8px',
-    border: 'none',
-    fontSize: '14px',
-    fontWeight: '500',
-    cursor: disabled || loading ? 'not-allowed' : 'pointer',
-    transition: 'all 0.2s ease',
-    backgroundColor: '#3b82f6',
-    color: 'white',
-    opacity: disabled || loading ? 0.6 : 1,
-    ...style // Allow style prop to override defaults
+  onMouseEnter,
+  onMouseLeave,
+  ...props
+}: ButtonProps) {
+  // Get the appropriate style configuration from design tokens
+  const styleConfig = buttonStyles[variant];
+  const isDisabled = disabled || isLoading;
+
+  // Professional hover effect handlers
+  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!isDisabled) {
+      // Apply hover styles from design tokens
+      Object.assign(e.currentTarget.style, styleConfig.hover);
+    }
+    onMouseEnter?.(e);
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!isDisabled) {
+      // Reset to base styles
+      Object.assign(e.currentTarget.style, styleConfig.base);
+    }
+    onMouseLeave?.(e);
+  };
+
+  // Combine base styles with any custom styles passed as props
+  const combinedStyle = {
+    ...styleConfig.base,
+    ...(isDisabled && styleConfig.disabled),
+    ...style
   };
 
   return (
     <button
-      type={type}
-      className={className}
-      style={defaultStyle}
-      disabled={disabled || loading}
-      {...rest}
+      style={combinedStyle}
+      disabled={isDisabled}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...props}
     >
-      {loading ? "Loading..." : children}
+      {/* Loading spinner - professional implementation */}
+      {isLoading && (
+        <svg
+          style={{
+            animation: 'spin 1s linear infinite',
+            marginRight: designTokens.spacing.sm,
+            width: '16px',
+            height: '16px'
+          }}
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+            style={{ opacity: 0.25 }}
+          />
+          <path
+            fill="currentColor"
+            style={{ opacity: 0.75 }}
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          />
+        </svg>
+      )}
+      {/* Show different text based on loading state */}
+      {isLoading && variant === 'primary' ? 'Loading...' : children}
     </button>
   );
-};
-
-export default Button;
+}
