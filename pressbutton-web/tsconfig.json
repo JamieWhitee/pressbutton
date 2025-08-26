@@ -39,7 +39,6 @@
     "exactOptionalPropertyTypes": true, // 可选属性的 “可选” 更严格
     "noImplicitOverride": true,         // 派生类重写必须写 override
     "useUnknownInCatchVariables": true, // catch(e) 默认 unknown
-    "importsNotUsedAsValues": "error",  // 仅类型导入必须用 import type
     "noFallthroughCasesInSwitch": true, // switch case 禁止贯穿
 
     /* ====== 类型环境 ====== */
