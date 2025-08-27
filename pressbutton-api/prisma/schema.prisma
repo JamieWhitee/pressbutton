@@ -1,10 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,9 +8,61 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
   name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  password  String
+  avatar    String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  comments  Comment[]
+  questions Question[]
+  votes     Vote[]
+
+  @@map("users")
+}
+
+model Question {
+  id              Int       @id @default(autoincrement())
+  positiveOutcome String
+  negativeOutcome String
+  authorId        Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  comments        Comment[]
+  author          User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  votes           Vote[]
+
+  @@map("questions")
+}
+
+model Vote {
+  id         Int          @id @default(autoincrement())
+  userId     Int
+  questionId Int
+  choice     ButtonChoice
+  createdAt  DateTime     @default(now())
+  question   Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@map("votes")
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  content    String
+  userId     Int
+  questionId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+enum ButtonChoice {
+  PRESS
+  DONT_PRESS
 }

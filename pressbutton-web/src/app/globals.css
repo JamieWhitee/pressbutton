@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Professional loading spinner animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Custom CSS variables for consistent styling */
+:root {
+  --primary-color: #e91e63;
+  --secondary-color: #9c27b0;
+  --accent-color: #ff9800;
+}
+
 /* 使用系统字体，避免外网拉字体失败 */
 :root {
   --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
