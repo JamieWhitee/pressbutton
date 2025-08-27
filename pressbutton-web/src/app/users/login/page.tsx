@@ -7,10 +7,15 @@ import Input from '../../../components/Input';
 import Button from '../../../components/Button';
 import Navigation from '../../../components/Navigation';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../../../contexts/AuthContext';
+import ErrorMessage from '../../../components/ErrorMessage';
+
 export default function LoginPage() {
   // isLoading state controls the loading indicator on the submit button
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { login } = useAuth();
 
   // Yup schema for login form validation
   const schema = yup.object({
@@ -66,9 +71,15 @@ export default function LoginPage() {
         </h1>
         <form onSubmit={handleSubmit(async (data) => {
           setIsLoading(true);
+          setError(null);
           try {
-            // TODO: Replace with real login logic
-            console.log(data);
+            // Use the auth context to login
+            await login(data.email, data.password);
+            // Redirect to home page on successful login
+            router.push('/');
+          } catch (error) {
+            // Display error message to user
+            setError(error instanceof Error ? error.message : 'Login failed');
           } finally {
             setIsLoading(false);
           }
@@ -79,6 +90,7 @@ export default function LoginPage() {
           width: '100%',
           alignItems: 'center'
         }}>
+          {error && <ErrorMessage error={error} />}
           <Input
             label="Email"
             type="email"

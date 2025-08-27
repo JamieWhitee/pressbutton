@@ -1,31 +1,37 @@
-import {
-  Injectable,
-  INestApplication,
-  OnModuleInit,
-  OnModuleDestroy,
-} from '@nestjs/common';
+// src/prisma/prisma.service.ts
+// This service provides database access throughout your application
+// Think of it as the "database gateway" that all your modules will use
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
+/*
+extends PrismaClient:
+
+Your service inherits all database methods (findMany, create, update, etc.)
+Like getting superpowers from Prisma!
+implements OnModuleInit, OnModuleDestroy:
+
+Tells NestJS "run my code when app starts/stops"
+Ensures proper database connection lifecycle
+onModuleInit():
+
+Automatically connects to your pressbutton_dev database
+Runs once when your app starts
+onModuleDestroy():
+Cleanly closes database connections
+Prevents memory leaks when app shuts down
+*/
 @Injectable()
 export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
   async onModuleInit() {
-    // 应用启动时连库（单元测试/热重载时很有用）
     await this.$connect();
+    console.log('Database connected successfully');
   }
-
   async onModuleDestroy() {
-    // 应用关闭时断开连接
     await this.$disconnect();
-  }
-
-  // 优雅关闭：让 Prisma 跟着 Nest 一起收尾
-  enableShutdownHooks(app: INestApplication) {
-    process.on('beforeExit', () => {
-      // 不要返回 promise，使用 void 丢弃即可，避免 ESLint 警告
-      void app.close();
-    });
+    console.log('Database disconnected successfully');
   }
 }

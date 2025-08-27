@@ -2,9 +2,41 @@
 import { useRouter } from 'next/navigation';
 import Button from '../../../components/Button';
 import Navigation from '../../../components/Navigation';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useEffect } from 'react';
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { user, logout, isLoading } = useAuth();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/users/login');
+    }
+  }, [user, isLoading, router]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #e91e63, #9c27b0, #ff9800)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        fontSize: '1.5rem'
+      }}>
+        Loading...
+      </div>
+    );
+  }
+
+  // Don't render anything if no user (will redirect)
+  if (!user) {
+    return null;
+  }
 
   return (
     <div style={{
@@ -38,7 +70,7 @@ export default function ProfilePage() {
             fontSize: '2.5rem',
             fontWeight: 'bold',
             textAlign: 'center',
-            marginBottom: '20px',
+            marginBottom: '30px',
             background: 'linear-gradient(135deg, #e91e63, #9c27b0, #ff9800)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -55,148 +87,96 @@ export default function ProfilePage() {
             width: '100%',
             alignItems: 'center'
           }}>
-            {/* User Info Section */}
+            {/* Main Profile Information Box with Avatar */}
             <div style={{
-              textAlign: 'center',
-              marginBottom: '30px'
+              backgroundColor: 'rgba(233, 30, 99, 0.1)',
+              borderRadius: '15px',
+              padding: '25px',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '25px'
             }}>
+              {/* Profile Avatar */}
               <div style={{
                 width: '80px',
                 height: '80px',
                 borderRadius: '50%',
                 background: 'linear-gradient(135deg, #e91e63, #9c27b0)',
-                margin: '0 auto 15px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: 'white',
                 fontSize: '2rem',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                boxShadow: '0 8px 20px rgba(233, 30, 99, 0.3)',
+                flexShrink: 0
               }}>
-                U
+                {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
               </div>
-              <h2 style={{ margin: '0 0 5px 0', fontSize: '1.5rem', color: '#333' }}>
-                User Name
-              </h2>
-              <p style={{ margin: 0, color: '#666', fontSize: '1rem' }}>
-                user@example.com
-              </p>
-            </div>
 
-            {/* Create Question Button - Prominent Position */}
-            <div style={{
-              width: '100%',
-              maxWidth: '400px',
-              marginTop: '25px',
-              marginBottom: '25px'
-            }}>
-              <Button
-                variant="primary"
-                onClick={() => router.push('/questions/create')}
-                style={{
-                  width: '100%',
-                  padding: '18px 25px',
+              {/* User Information */}
+              <div style={{ flex: 1 }}>
+                <h3 style={{
+                  margin: '0 0 12px 0',
+                  color: '#e91e63',
                   fontSize: '1.2rem',
-                  fontWeight: 'bold',
-                  borderRadius: '25px',
-                  background: 'linear-gradient(135deg, #e91e63, #9c27b0, #ff9800)',
-                  border: 'none',
-                  color: 'white',
-                  boxShadow: '0 8px 20px rgba(233, 30, 99, 0.4)',
-                  transform: 'scale(1)',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.02)';
-                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(233, 30, 99, 0.6)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.boxShadow = '0 8px 20px rgba(233, 30, 99, 0.4)';
-                }}
-              >
-                🔴 Create New Question
-              </Button>
-            </div>
-
-            {/* Action Buttons */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '15px',
-              width: '100%',
-              maxWidth: '300px'
-            }}>
-              <Button
-                variant="primary"
-                onClick={() => router.push('/questions/create')}
-                style={{
-                  padding: '15px 25px',
-                  fontSize: '1.1rem',
                   fontWeight: 'bold'
-                }}
-              >
-                🔴 Create Your Question
-              </Button>
-
-              <Button
-                variant="secondary"
-                onClick={() => router.push('/questions')}
-                style={{
-                  padding: '15px 25px',
-                  fontSize: '1.1rem'
-                }}
-              >
-                📝 View All Questions
-              </Button>
-
-              <Button
-                variant="secondary"
-                onClick={() => router.push('/rank')}
-                style={{
-                  padding: '15px 25px',
-                  fontSize: '1.1rem'
-                }}
-              >
-                🏆 View Rankings
-              </Button>
+                }}>
+                  Account Information
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <p style={{ margin: '0', fontSize: '1rem' }}>
+                    <strong>Email:</strong> {user.email}
+                  </p>
+                  {user.name && (
+                    <p style={{ margin: '0', fontSize: '1rem' }}>
+                      <strong>Name:</strong> {user.name}
+                    </p>
+                  )}
+                  <p style={{ margin: '0', fontSize: '0.9rem', color: '#666' }}>
+                    <strong>Member since:</strong> {new Date(user.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Stats Section */}
+            {/* Statistics Section */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '20px',
+              gap: '15px',
               width: '100%',
-              marginTop: '30px'
+              marginTop: '10px'
             }}>
               <div style={{
                 textAlign: 'center',
                 padding: '20px',
-                backgroundColor: 'rgba(233, 30, 99, 0.1)',
-                borderRadius: '15px'
+                backgroundColor: 'rgba(233, 30, 99, 0.05)',
+                borderRadius: '15px',
+                border: '1px solid rgba(233, 30, 99, 0.1)'
               }}>
-                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#e91e63' }}>42</div>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#e91e63' }}>0</div>
                 <div style={{ fontSize: '0.9rem', color: '#666' }}>Questions Created</div>
               </div>
-
               <div style={{
                 textAlign: 'center',
                 padding: '20px',
-                backgroundColor: 'rgba(156, 39, 176, 0.1)',
-                borderRadius: '15px'
+                backgroundColor: 'rgba(156, 39, 176, 0.05)',
+                borderRadius: '15px',
+                border: '1px solid rgba(156, 39, 176, 0.1)'
               }}>
-                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#9c27b0' }}>1,247</div>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#9c27b0' }}>0</div>
                 <div style={{ fontSize: '0.9rem', color: '#666' }}>Total Votes</div>
               </div>
-
               <div style={{
                 textAlign: 'center',
                 padding: '20px',
-                backgroundColor: 'rgba(255, 152, 0, 0.1)',
-                borderRadius: '15px'
+                backgroundColor: 'rgba(255, 152, 0, 0.05)',
+                borderRadius: '15px',
+                border: '1px solid rgba(255, 152, 0, 0.1)'
               }}>
-                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ff9800' }}>156</div>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ff9800' }}>0</div>
                 <div style={{ fontSize: '0.9rem', color: '#666' }}>Days Active</div>
               </div>
             </div>
@@ -233,15 +213,7 @@ export default function ProfilePage() {
                   padding: '15px 30px',
                   fontSize: '1.2rem',
                   fontWeight: 'bold',
-                  borderRadius: '25px',
-                  transform: 'scale(1)',
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
+                  borderRadius: '25px'
                 }}
               >
                 Create New Question
@@ -264,31 +236,6 @@ export default function ProfilePage() {
               }}>
                 Recent Activity
               </h3>
-
-              {/* Create Question Button - Inside Recent Activity */}
-              <div style={{
-                marginBottom: '25px',
-                textAlign: 'center'
-              }}>
-                <Button
-                  variant="primary"
-                  onClick={() => router.push('/questions/create')}
-                  style={{
-                    padding: '15px 30px',
-                    fontSize: '1.2rem',
-                    fontWeight: 'bold',
-                    borderRadius: '25px',
-                    background: 'linear-gradient(135deg, #e91e63, #9c27b0, #ff9800)',
-                    border: 'none',
-                    color: 'white',
-                    boxShadow: '0 8px 20px rgba(233, 30, 99, 0.4)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  🔴 Create New Question
-                </Button>
-              </div>
-
               <div style={{
                 textAlign: 'center',
                 color: '#666',

@@ -16,12 +16,12 @@ export default function CreateQuestionPage() {
   const schema = yup.object({
     positiveOutcome: yup.string()
       .required("Positive outcome is required")
-      .min(5, "Please provide more detail (at least 5 characters)")
-      .max(200, "Keep it concise (max 200 characters)"),
+      .min(10, "Please provide more detail (at least 10 characters)")
+      .max(500, "Keep it reasonable (max 500 characters)"),
     negativeOutcome: yup.string()
       .required("Negative outcome is required")
-      .min(5, "Please provide more detail (at least 5 characters)")
-      .max(200, "Keep it concise (max 200 characters)"),
+      .min(10, "Please provide more detail (at least 10 characters)")
+      .max(500, "Keep it reasonable (max 500 characters)"),
   });
 
   const { register, handleSubmit, formState: { errors } } = useForm({
@@ -113,18 +113,43 @@ export default function CreateQuestionPage() {
               }}>
                 ✅ Good thing that happens:
               </label>
-              <Input
-                label=""
-                type="text"
-                placeholder="You will be rich and famous"
-                error={errors.positiveOutcome as import('react-hook-form').FieldError | undefined}
+              <textarea
+                placeholder="You will be rich and famous, live in a mansion, never worry about money again..."
                 {...register("positiveOutcome")}
                 style={{
-                  fontSize: '16px',
+                  width: '100%',
+                  minHeight: '120px',
+                  maxHeight: '200px',
                   padding: '15px',
-                  minHeight: '50px'
+                  fontSize: '16px',
+                  borderRadius: '12px',
+                  border: errors.positiveOutcome ? '2px solid #ef4444' : '2px solid #e2e8f0',
+                  backgroundColor: '#ffffff',
+                  outline: 'none',
+                  transition: 'border-color 0.2s ease',
+                  resize: 'vertical',
+                  fontFamily: 'system-ui, -apple-system, sans-serif',
+                  lineHeight: '1.5'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#e91e63';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(233, 30, 99, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = errors.positiveOutcome ? '#ef4444' : '#e2e8f0';
+                  e.target.style.boxShadow = 'none';
                 }}
               />
+              {errors.positiveOutcome && (
+                <p style={{
+                  color: '#ef4444',
+                  fontSize: '0.875rem',
+                  marginTop: '5px',
+                  marginLeft: '5px'
+                }}>
+                  {errors.positiveOutcome.message}
+                </p>
+              )}
             </div>
 
             <div style={{ width: '100%' }}>
@@ -137,18 +162,43 @@ export default function CreateQuestionPage() {
               }}>
                 ❌ Bad thing that happens:
               </label>
-              <Input
-                label=""
-                type="text"
-                placeholder="You lose all your family members"
-                error={errors.negativeOutcome as import('react-hook-form').FieldError | undefined}
+              <textarea
+                placeholder="You lose all your family members, friends abandon you, you become completely alone..."
                 {...register("negativeOutcome")}
                 style={{
-                  fontSize: '16px',
+                  width: '100%',
+                  minHeight: '120px',
+                  maxHeight: '200px',
                   padding: '15px',
-                  minHeight: '50px'
+                  fontSize: '16px',
+                  borderRadius: '12px',
+                  border: errors.negativeOutcome ? '2px solid #ef4444' : '2px solid #e2e8f0',
+                  backgroundColor: '#ffffff',
+                  outline: 'none',
+                  transition: 'border-color 0.2s ease',
+                  resize: 'vertical',
+                  fontFamily: 'system-ui, -apple-system, sans-serif',
+                  lineHeight: '1.5'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#e91e63';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(233, 30, 99, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = errors.negativeOutcome ? '#ef4444' : '#e2e8f0';
+                  e.target.style.boxShadow = 'none';
                 }}
               />
+              {errors.negativeOutcome && (
+                <p style={{
+                  color: '#ef4444',
+                  fontSize: '0.875rem',
+                  marginTop: '5px',
+                  marginLeft: '5px'
+                }}>
+                  {errors.negativeOutcome.message}
+                </p>
+              )}
             </div>
 
             <div style={{

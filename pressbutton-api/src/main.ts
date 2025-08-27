@@ -2,10 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from 'nestjs-pino';
 import helmet from 'helmet';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { PrismaService } from './prisma/prisma.service';
 
 async function bootstrap() {
   // 使用 Pino 日志（bufferLogs:true 可避免早期日志丢失）
@@ -61,7 +60,7 @@ async function bootstrap() {
 
   // 统一前缀与版本
   app.setGlobalPrefix('api');
-  app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
+  //app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
 
   // Swagger
   const swaggerCfg = new DocumentBuilder()
@@ -76,12 +75,11 @@ async function bootstrap() {
   // 端口
   const cfg = app.get(ConfigService);
   const port = Number(cfg.get('PORT') ?? 3001);
-  //await app.listen(port);
+
   console.log(`🚀 API running at http://localhost:${port}`);
   console.log(`📘 Swagger at http://localhost:${port}/docs`);
-  const prisma = app.get(PrismaService);
-  prisma.enableShutdownHooks(app);
 
   await app.listen(port);
 }
-bootstrap();
+
+void bootstrap();

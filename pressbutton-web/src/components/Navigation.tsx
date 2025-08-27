@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useAuth } from "../contexts/AuthContext";
 
 /**
  * Navigation bar component with Instagram-inspired styling
@@ -9,11 +10,12 @@ import { useRouter, usePathname } from "next/navigation";
 const Navigation: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   const navItems = [
     { name: "Home", path: "/" },
     { name: "Rank", path: "/rank" },
-    { name: "Profile", path: "/profile" },
+    ...(user ? [{ name: "Profile", path: "/users/profile" }] : []),
   ];
 
   const isActive = (path: string) => pathname === path;
@@ -83,32 +85,72 @@ const Navigation: React.FC = () => {
             </button>
           ))}
 
-          {/* Login/Register Button */}
-          <button
-            onClick={() => router.push('/users/login')}
-            style={{
-              background: 'rgba(255, 255, 255, 0.2)',
-              border: '2px solid white',
-              color: 'white',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              padding: '8px 20px',
-              borderRadius: '25px',
-              transition: 'all 0.3s ease',
-              textShadow: 'none'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'white';
-              e.currentTarget.style.color = '#e91e63';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-              e.currentTarget.style.color = 'white';
-            }}
-          >
-            Login
-          </button>
+          {/* Auth Buttons - Show different buttons based on login status */}
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <span style={{
+                color: 'white',
+                fontSize: '14px',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+              }}>
+                Hi, {user.name || user.email}!
+              </span>
+              <button
+                onClick={() => {
+                  logout();
+                  router.push('/');
+                }}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  border: '2px solid white',
+                  color: 'white',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  padding: '8px 20px',
+                  borderRadius: '25px',
+                  transition: 'all 0.3s ease',
+                  textShadow: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'white';
+                  e.currentTarget.style.color = '#e91e63';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.style.color = 'white';
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => router.push('/users/login')}
+              style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: '2px solid white',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                padding: '8px 20px',
+                borderRadius: '25px',
+                transition: 'all 0.3s ease',
+                textShadow: 'none'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'white';
+                e.currentTarget.style.color = '#e91e63';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.color = 'white';
+              }}
+            >
+              Login
+            </button>
+          )}
         </div>
       </div>
     </nav>

@@ -6,7 +6,11 @@ async function main() {
   await prisma.user.upsert({
     where: { email: 'alice@example.com' },
     update: {},
-    create: { email: 'alice@example.com', name: 'Alice' },
+    create: {
+      email: 'alice@example.com',
+      name: 'Alice',
+      password: 'password123', // 临时密码，实际应用中需要哈希
+    },
   });
 }
 
@@ -15,4 +19,6 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(() => prisma.$disconnect()); // 注意：不是 async 回调
+  .finally(() => {
+    void prisma.$disconnect();
+  });

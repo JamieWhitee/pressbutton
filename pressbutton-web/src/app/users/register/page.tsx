@@ -7,15 +7,19 @@ import Input from '../../../components/Input';
 import Button from '../../../components/Button';
 import Navigation from '../../../components/Navigation';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../../../contexts/AuthContext';
+import ErrorMessage from '../../../components/ErrorMessage';
 
 export default function RegisterPage() {
   const router = useRouter();
   // isLoading state controls the loading indicator on the submit button
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { register: registerUser } = useAuth();
   const schema = yup.object({
-    email: yup.string().required("Email is required").email("Invalid email").max(20, "Email must be at most 20 characters"),
+    email: yup.string().required("Email is required").email("Invalid email").max(50, "Email must be at most 50 characters"),
     password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters").max(20, "Password must be at most 20 characters"),
-    username: yup.string().required("Username is required").min(3, "Username must be at least 3 characters").max(20, "Username must be at most 20 characters"),
+    name: yup.string().required("Name is required").min(3, "Name must be at least 3 characters").max(20, "Name must be at most 20 characters"),
     passwordConfirm: yup.string().oneOf([yup.ref("password")], "Passwords must match"),
   });
 
@@ -66,9 +70,15 @@ export default function RegisterPage() {
         </h1>
         <form onSubmit={handleSubmit(async (data) => {
           setIsLoading(true);
+          setError(null);
           try {
-            // TODO: Replace with real registration logic
-            console.log(data);
+            // Use the auth context to register
+            await registerUser(data.email, data.password, data.name);
+            // Redirect to home page on successful registration
+            router.push('/');
+          } catch (error) {
+            // Display error message to user
+            setError(error instanceof Error ? error.message : 'Registration failed');
           } finally {
             setIsLoading(false);
           }
@@ -79,13 +89,14 @@ export default function RegisterPage() {
           width: '100%',
           alignItems: 'center'
         }}>
+          {error && <ErrorMessage error={error} />}
           <Input
-            label="Username"
+            label="Name"
             type="text"
-            placeholder="Username"
+            placeholder="Name"
             textColor="#e91e63"
-            error={errors.username as import('react-hook-form').FieldError | undefined}
-            {...register("username")}
+            error={errors.name as import('react-hook-form').FieldError | undefined}
+            {...register("name")}
           />
           <Input
             label="Email"

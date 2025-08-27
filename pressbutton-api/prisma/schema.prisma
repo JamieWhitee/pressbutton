@@ -1,10 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,70 +8,61 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
   name      String?
   password  String
   avatar    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  questions Question[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   comments  Comment[]
+  questions Question[]
   votes     Vote[]
 
   @@map("users")
 }
 
 model Question {
-  id            Int      @id @default(autoincrement())
-  positiveOutcome String   // "You will be rich"
-  negativeOutcome String   // "You lose all family members"
-  authorId      Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  // Relationships
-  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  votes    Vote[]    // Users vote PRESS or DON'T_PRESS
-  comments Comment[] // Discussion about the dilemma
+  id              Int       @id @default(autoincrement())
+  positiveOutcome String
+  negativeOutcome String
+  authorId        Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  comments        Comment[]
+  author          User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  votes           Vote[]
 
   @@map("questions")
 }
 
 model Vote {
-  id         Int        @id @default(autoincrement())
+  id         Int          @id @default(autoincrement())
   userId     Int
   questionId Int
-  choice     ButtonChoice // PRESS or DONT_PRESS
-  createdAt  DateTime   @default(now())
+  choice     ButtonChoice
+  createdAt  DateTime     @default(now())
+  question   Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Relationships
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-
-  // One vote per user per question
   @@unique([userId, questionId])
   @@map("votes")
 }
 
-// Comments: Discussion about the dilemma
 model Comment {
   id         Int      @id @default(autoincrement())
-  content    String   // Comment text
-  userId     Int      // Who wrote this comment
-  questionId Int      // Which question is this comment on
+  content    String
+  userId     Int
+  questionId Int
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-
-  // Relationships
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("comments")
 }
 
 enum ButtonChoice {
-  PRESS      // "I would press the button"
-  DONT_PRESS // "I would NOT press the button"
+  PRESS
+  DONT_PRESS
 }
