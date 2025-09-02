@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "kill-port": "lsof -ti:3001 | xargs kill -9 || true",
+    "dev-clean": "npm run kill-port && npm run start:dev"
+  }
+}

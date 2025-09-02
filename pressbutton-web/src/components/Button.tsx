@@ -1,99 +1,100 @@
 import React from 'react';
-import { designTokens, buttonStyles } from '../styles/designTokens';
-
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-  variant?: 'primary' | 'secondary';
-  isLoading?: boolean;
-}
 
 /**
- * Professional Button component using design tokens
- *
- * Features:
- * - Consistent styling using design system
- * - Smooth hover animations with professional easing curves
- * - Loading states with proper accessibility
- * - Built-in responsive behavior
- *
- * @param variant - 'primary' for main actions, 'secondary' for alternative actions
- * @param isLoading - Shows loading state and disables interaction
+ * 专业按钮组件，采用简洁设计风格
+ * Professional Button component with clean design
  */
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;       // 按钮内容 | Button content
+  variant?: 'primary' | 'secondary'; // 按钮类型 | Button variant
+  isLoading?: boolean;             // 加载状态 | Loading state
+}
+
 export default function Button({
   children,
   variant = 'primary',
   isLoading = false,
   disabled,
   style,
-  onMouseEnter,
-  onMouseLeave,
   ...props
 }: ButtonProps) {
-  // Get the appropriate style configuration from design tokens
-  const styleConfig = buttonStyles[variant];
-  const isDisabled = disabled || isLoading;
-
-  // Professional hover effect handlers
-  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!isDisabled) {
-      // Apply hover styles from design tokens
-      Object.assign(e.currentTarget.style, styleConfig.hover);
-    }
-    onMouseEnter?.(e);
+  // 按钮样式配置 | Button style configuration
+  const baseStyles = {
+    padding: '12px 24px',
+    borderRadius: '12px',
+    fontSize: '16px',
+    fontWeight: '600',
+    border: 'none',
+    cursor: disabled || isLoading ? 'not-allowed' : 'pointer',
+    transition: 'all 0.3s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    minHeight: '48px'
   };
 
-  const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!isDisabled) {
-      // Reset to base styles
-      Object.assign(e.currentTarget.style, styleConfig.base);
+  // 根据variant选择颜色方案 | Color scheme based on variant
+  const variantStyles = {
+    primary: {
+      background: 'linear-gradient(135deg, #e91e63, #9c27b0)',
+      color: '#ffffff',
+      boxShadow: '0 4px 15px rgba(233, 30, 99, 0.3)'
+    },
+    secondary: {
+      background: '#ffffff',
+      color: '#666666',
+      border: '2px solid #e0e0e0',
+      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
     }
-    onMouseLeave?.(e);
   };
 
-  // Combine base styles with any custom styles passed as props
-  const combinedStyle = {
-    ...styleConfig.base,
-    ...(isDisabled && styleConfig.disabled),
+  // 禁用状态样式 | Disabled state styles
+  const disabledStyles = {
+    opacity: 0.6,
+    cursor: 'not-allowed'
+  };
+
+  // 组合最终样式 | Combine final styles
+  const finalStyles = {
+    ...baseStyles,
+    ...variantStyles[variant],
+    ...(disabled || isLoading ? disabledStyles : {}),
     ...style
   };
 
+  // 加载动画样式 | Loading animation styles
+  const spinnerStyles = {
+    width: '16px',
+    height: '16px',
+    border: '2px solid transparent',
+    borderTop: '2px solid currentColor',
+    borderRadius: '50%',
+    animation: 'spin 1s linear infinite'
+  };
+
   return (
-    <button
-      style={combinedStyle}
-      disabled={isDisabled}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      {...props}
-    >
-      {/* Loading spinner - professional implementation */}
-      {isLoading && (
-        <svg
-          style={{
-            animation: 'spin 1s linear infinite',
-            marginRight: designTokens.spacing.sm,
-            width: '16px',
-            height: '16px'
-          }}
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-            style={{ opacity: 0.25 }}
-          />
-          <path
-            fill="currentColor"
-            style={{ opacity: 0.75 }}
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          />
-        </svg>
-      )}
-      {/* Show different text based on loading state */}
-      {isLoading && variant === 'primary' ? 'Loading...' : children}
-    </button>
+    <>
+      {/* CSS动画定义 | CSS animation definition */}
+      <style jsx>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+
+      <button
+        style={finalStyles}
+        disabled={disabled || isLoading}
+        {...props}
+      >
+        {/* 加载指示器 | Loading indicator */}
+        {isLoading && <div style={spinnerStyles} />}
+
+        {/* 按钮文本 | Button text */}
+        {isLoading ? 'Loading...' : children}
+      </button>
+    </>
   );
 }

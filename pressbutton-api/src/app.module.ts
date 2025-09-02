@@ -5,6 +5,9 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { QuestionsModule } from './modules/questions/questions.module';
+// import { QuestionsService } from './questions/questions.service';
+// Removed because the file does not exist, which caused a module not found error.
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -33,6 +36,7 @@ import { AuthModule } from './auth/auth.module';
     //Clean architecture: Separates database concerns from business logic
     PrismaModule,
     AuthModule,
+    QuestionsModule,
   ],
   providers: [
     // Apply rate limiting globally to all routes

@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { apiClient } from '../lib/api';
-import type { User } from '../lib/api';
+import type { User, RegisterRequest } from '../lib/api';
 
 // 1. Define the context interface
 interface AuthContextType {
@@ -61,7 +61,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // 7. Register function
   const register = async (email: string, password: string, name?: string) => {
     try {
-      const userData = await apiClient.register({ email, password, name });
+      const requestData: RegisterRequest = { email, password };
+      if (name) {
+        requestData.name = name;
+      }
+      const userData = await apiClient.register(requestData);
       // After registration, automatically log them in
       await login(email, password);
     } catch (error) {

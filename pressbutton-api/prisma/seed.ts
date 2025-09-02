@@ -4,12 +4,12 @@ const prisma = new PrismaClient();
 async function main() {
   // upsert 一个用户当示例
   await prisma.user.upsert({
-    where: { email: 'alice@example.com' },
+    where: { email: 'test@test.com' },
     update: {},
     create: {
-      email: 'alice@example.com',
-      name: 'Alice',
-      password: 'password123', // 临时密码，实际应用中需要哈希
+      email: 'test@test.com',
+      name: 'Test User',
+      password: '123456', // 临时密码，实际应用中需要哈希
     },
   });
 }

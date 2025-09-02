@@ -76,10 +76,12 @@ async function bootstrap() {
   const cfg = app.get(ConfigService);
   const port = Number(cfg.get('PORT') ?? 3001);
 
-  console.log(`🚀 API running at http://localhost:${port}`);
-  console.log(`📘 Swagger at http://localhost:${port}/docs`);
+  const logger = app.get(Logger);
 
   await app.listen(port);
+
+  logger.log(`🚀 API running at http://localhost:${port}`);
+  logger.log(`📘 Swagger at http://localhost:${port}/docs`);
 }
 
 void bootstrap();
