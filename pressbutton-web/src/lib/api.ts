@@ -36,6 +36,10 @@ export interface AuthResponse {
   user: User;
   access_token: string;
   token_type: string;
+  guestCredentials?: {
+    email: string;
+    password: string;
+  };
 }
 
 /**
@@ -269,6 +273,51 @@ class EnhancedApiClient {
         email: data.email,
         error: error instanceof Error ? error.message : String(error)
       }, OperationType.USER_AUTHENTICATION);
+
+      throw error;
+    }
+  }
+
+  /**
+   * Create guest account for quick voting access
+   * This allows users to vote without going through the full registration process
+   */
+  async createGuestAccount(): Promise<AuthResponse> {
+    enterpriseLogger.info('Guest account creation started', {}, OperationType.USER_REGISTRATION);
+
+    try {
+      const response = await this.request<AuthResponse>('/auth/guest-signup', {
+        method: 'POST',
+      });
+
+      // Automatically store token for immediate login
+      this.setToken(response.access_token);
+
+      enterpriseLogger.info('Guest account created successfully', {
+        userId: response.user.id,
+        email: response.user.email,
+        tokenType: response.token_type,
+        isGuest: true
+      }, OperationType.USER_REGISTRATION);
+
+      // Log user action for audit trail
+      enterpriseLogger.logUserAction(
+        String(response.user.id),
+        'Guest Account Created',
+        'Authentication',
+        {
+          email: response.user.email,
+          createTime: new Date().toISOString(),
+          accountType: 'guest'
+        }
+      );
+
+      return response;
+
+    } catch (error) {
+      enterpriseLogger.error('Guest account creation failed', {
+        error: error instanceof Error ? error.message : String(error)
+      }, OperationType.USER_REGISTRATION);
 
       throw error;
     }

@@ -139,4 +139,54 @@ export class AuthService {
       token_type: 'Bearer',
     };
   }
+
+  // Create a guest account for quick voting access
+  // This allows users to vote without going through the full registration process
+  async createGuestAccount(): Promise<AuthResponseDto> {
+    // Generate unique guest credentials
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 8); // 6 random chars
+    const username = `guest_${timestamp}_${randomSuffix}`;
+    const email = `${username}@pressbutton.guest`;
+    
+    // Generate a 6-digit random password
+    const password = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Hash the password
+    const hashedPassword = await this.hashPassword(password);
+
+    // Create guest user in database
+    const user = await this.prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name: `Guest User ${randomSuffix}`,
+        accountType: 'GUEST', // Mark as guest account
+      },
+    });
+
+    // Generate JWT token for immediate login
+    const tokens = await this.generateTokens({
+      id: user.id,
+      email: user.email,
+    });
+
+    // Return user data with access token for automatic login
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name ?? undefined,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+      access_token: tokens.access_token,
+      token_type: 'Bearer',
+      // Include plain password for reference (guest accounts only)
+      guestCredentials: {
+        email,
+        password,
+      },
+    };
+  }
 }

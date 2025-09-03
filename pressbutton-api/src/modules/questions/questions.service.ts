@@ -370,4 +370,105 @@ export class QuestionsService {
       throw error;
     }
   }
+
+  /**
+   * Get a random question that the user hasn't voted on yet
+   * 获取用户尚未投票的随机问题
+   *
+   * @param userId - The ID of the user (optional, if not provided, returns any random question)
+   * @returns Promise<QuestionsDto | null> - Random question or null if no questions available
+   */
+  async getRandomQuestion(userId?: number): Promise<QuestionsDto | null> {
+    try {
+      this.logger.log(
+        `🎲 Service: Getting random question for user ${userId || 'anonymous'}`,
+      );
+
+      let where: Prisma.QuestionWhereInput = {};
+
+      // If user is provided, exclude questions they've already voted on
+      // 如果提供了用户ID，排除用户已经投票的问题
+      if (userId) {
+        where = {
+          votes: {
+            none: {
+              userId: userId,
+            },
+          },
+        };
+      }
+
+      // Get total count of available questions
+      // 获取可用问题的总数
+      const totalQuestions = await this.prisma.question.count({
+        where,
+      });
+
+      if (totalQuestions === 0) {
+        this.logger.warn(
+          `⚠️ No questions available for user ${userId || 'anonymous'}`,
+        );
+        return null;
+      }
+
+      // Generate random skip value
+      // 生成随机跳过值
+      const randomSkip = Math.floor(Math.random() * totalQuestions);
+
+      // Fetch the random question with all related data
+      // 获取随机问题及所有相关数据
+      const randomQuestion = await this.prisma.question.findFirst({
+        where,
+        skip: randomSkip,
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          _count: {
+            select: {
+              votes: true,
+              comments: true,
+            },
+          },
+          votes: {
+            select: {
+              id: true,
+              choice: true,
+              userId: true,
+              createdAt: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!randomQuestion) {
+        this.logger.warn(
+          `⚠️ No random question found for user ${userId || 'anonymous'}`,
+        );
+        return null;
+      }
+
+      this.logger.log(
+        `✅ Service: Found random question ID ${randomQuestion.id} for user ${userId || 'anonymous'}`,
+      );
+
+      return randomQuestion;
+    } catch (error) {
+      this.logger.error(
+        `❌ Service: Error getting random question: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error instanceof Error ? error.stack : undefined,
+      );
+      throw error;
+    }
+  }
 }

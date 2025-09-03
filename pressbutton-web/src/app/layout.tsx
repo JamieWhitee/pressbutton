@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "../contexts/AuthContext";
 import { EnterpriseProvider } from "../contexts/EnterpriseContext";
+import TokenDebugger from "../components/TokenDebugger";
 
 export const metadata: Metadata = {
   title: "pressbutton",
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <EnterpriseProvider>
           <AuthProvider>
             {children}
+            <TokenDebugger />
           </AuthProvider>
         </EnterpriseProvider>
       </body>

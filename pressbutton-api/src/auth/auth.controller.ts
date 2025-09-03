@@ -46,6 +46,20 @@ export class AuthController {
     // 401 Unauthorized: Password is incorrect
   }
 
+  // POST /api/v1/auth/guest-signup
+  // Create a temporary guest account for quick voting access
+  @Post('guest-signup')
+  async createGuestAccount(): Promise<AuthResponseDto> {
+    // No body validation needed - all guest data is auto-generated
+    // This creates a unique guest account with random credentials
+
+    return this.authService.createGuestAccount();
+    // Always returns 201 Created with:
+    // - New guest user data
+    // - JWT access token for immediate login
+    // - Guest credentials (email/password) for reference
+  }
+
   // GET /api/v1/auth/profile
   // Protected route - requires valid JWT token in Authorization header
   @UseGuards(JwtAuthGuard)
