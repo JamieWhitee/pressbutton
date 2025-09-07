@@ -47,6 +47,12 @@ export interface AuthResponse {
  * Provides backward compatibility while adding enterprise capabilities
  */
 class EnhancedApiClient {
+  get(arg0: string) {
+    throw new Error('Method not implemented.');
+  }
+  post(arg0: string, arg1: { questionId: string; vote: "PRESS" | "DONT_PRESS"; }) {
+    throw new Error('Method not implemented.');
+  }
   private baseURL: string;
 
   constructor(baseURL: string) {

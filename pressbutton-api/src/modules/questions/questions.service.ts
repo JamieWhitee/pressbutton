@@ -97,6 +97,57 @@ export class QuestionsService {
   }
 
   /**
+   * 获取最受欢迎的问题（按总投票数排序）
+   * Get most popular questions sorted by total votes
+   *
+   * @param limit - 返回问题数量限制 / Number of questions to return (default: 15)
+   * @returns 按投票数排序的问题列表 / List of questions sorted by vote count
+   */
+  async getTopQuestions(limit: number = 15): Promise<QuestionsDto[]> {
+    this.logger.log(`🏆 Service: Fetching top ${limit} questions by vote count`);
+
+    try {
+      const topQuestions = await this.prisma.question.findMany({
+        orderBy: {
+          votes: {
+            _count: 'desc', // 按投票数量降序排列 / Order by vote count descending
+          },
+        },
+        take: limit, // 限制返回数量 / Limit results
+        include: {
+          _count: {
+            select: {
+              votes: true,      // 包含投票总数 / Include vote count
+              comments: true    // 包含评论总数 / Include comment count
+            },
+          },
+          votes: {
+            select: {
+              choice: true,     // 包含投票选择用于计算百分比 / Include vote choices for percentage calculation
+            },
+          },
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      this.logger.log(
+        `✅ Service: Retrieved ${topQuestions.length} top questions successfully`,
+      );
+
+      return topQuestions;
+    } catch (error) {
+      this.logger.error('Failed to retrieve top questions', error);
+      throw error;
+    }
+  }
+
+  /**
    * 企业级问题创建功能 - 完整的日志记录和验证
    * Enterprise-grade question creation with comprehensive logging and validation
    */

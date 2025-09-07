@@ -267,6 +267,87 @@ export const questionsApi = {
   },
 
   /**
+   * Get top questions sorted by vote count (most popular first)
+   * Authentication: No JWT token required for public ranking data
+   * Endpoint: GET /api/questions/top?limit={limit}
+   * 获取按投票数排序的热门问题（最受欢迎的在前），公开排名数据无需JWT令牌
+   */
+  async getTop(limit: number = 15): Promise<Question[]> {
+    try {
+      // Log the API operation start using enterprise logger
+      // 使用企业级日志记录器记录API操作开始
+      enterpriseLogger.info('Starting question getTop operation', {
+        limit,
+        operation: 'fetch_top_questions'
+      }, OperationType.DATA_READ);
+
+      // Make the API request to get top questions by vote count
+      // 发起API请求获取按投票数排序的热门问题
+      const response: ApiResponse<BackendApiResponse<Question[]>> = await enterpriseApiClient.get(
+        `/questions/top?limit=${limit}`
+      );
+
+      // Check if the enterprise client request was successful
+      // 检查企业级客户端请求是否成功
+      if (!response.success || !response.data) {
+        enterpriseLogger.error('Enterprise client request failed for getTop', {
+          limit,
+          error: response.error?.message || 'Unknown error'
+        }, OperationType.API_ERROR);
+        throw new Error(response.error?.message || 'Failed to fetch top questions');
+      }
+
+      // Check if the backend API call was successful
+      // 检查后端API调用是否成功
+      const backendResponse = response.data;
+      if (!backendResponse.success || !backendResponse.data) {
+        enterpriseLogger.error('Backend API call failed for getTop', {
+          limit,
+          backendError: backendResponse.error || 'Unknown backend error'
+        }, OperationType.API_ERROR);
+        throw new Error(backendResponse.error || 'Backend failed to fetch top questions');
+      }
+
+      // Validate that we received an array of questions
+      // 验证我们收到了问题数组
+      if (!Array.isArray(backendResponse.data)) {
+        enterpriseLogger.error('Invalid response format for getTop - expected array', {
+          limit,
+          receivedType: typeof backendResponse.data
+        }, OperationType.DATA_ERROR);
+        throw new Error('Invalid response format: expected array of questions');
+      }
+
+      const topQuestions = backendResponse.data;
+
+      // Log successful operation with detailed stats
+      // 记录成功操作和详细统计信息
+      enterpriseLogger.info('Successfully retrieved top questions', {
+        limit,
+        actualCount: topQuestions.length,
+        hasVoteCounts: topQuestions.every(q => q._count?.votes !== undefined),
+        topVoteCount: topQuestions[0]?._count?.votes || 0,
+        operationResult: 'success'
+      }, OperationType.DATA_READ);
+
+      return topQuestions;
+
+    } catch (error) {
+      // Log the error with context for debugging
+      // 记录错误和上下文信息用于调试
+      enterpriseLogger.error('Failed to fetch top questions', {
+        limit,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      }, OperationType.API_ERROR);
+
+      // Re-throw the error to let the caller handle it
+      // 重新抛出错误让调用者处理
+      throw error;
+    }
+  },
+
+  /**
    * Get a random question that the user hasn't voted on yet
    * Authentication: No JWT token required for anonymous users
    * Endpoint: GET /api/questions/random?userId={userId}

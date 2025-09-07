@@ -54,6 +54,70 @@ export class QuestionsController {
 
   constructor(private readonly questionsService: QuestionsService) {}
 
+  @Get('top')
+  @ApiOperation({
+    summary: 'Get top questions by vote count',
+    description:
+      'Retrieves the most popular questions ordered by total vote count (descending)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Maximum number of questions to return',
+    example: 15,
+    type: 'number',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Top questions retrieved successfully',
+    type: ApiResponseDto,
+    isArray: true,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    schema: {
+      example: {
+        success: false,
+        error: 'Internal server error',
+        data: null,
+      },
+    },
+  })
+  async getTopQuestions(
+    @Query('limit') limit?: string,
+  ): Promise<{ success: boolean; data: any; error?: string }> {
+    try {
+      this.logger.log('🔥 Controller: GET /questions/top endpoint hit');
+
+      // Parse and validate limit parameter (default to 15)
+      const parsedLimit = limit ? parseInt(limit, 10) : 15;
+      const validLimit = Math.min(Math.max(parsedLimit, 1), 50); // Clamp between 1-50
+
+      this.logger.log(`📊 Controller: Fetching top ${validLimit} questions`);
+
+      const topQuestions = await this.questionsService.getTopQuestions(
+        validLimit,
+      );
+
+      this.logger.log(
+        `✅ Controller: Successfully retrieved ${topQuestions.length} top questions`,
+      );
+
+      return {
+        success: true,
+        data: topQuestions,
+      };
+    } catch (error) {
+      this.logger.error('❌ Controller: Failed to get top questions', error);
+      return {
+        success: false,
+        error: 'Failed to retrieve top questions',
+        data: null,
+      };
+    }
+  }
+
   @Get('random')
   @ApiOperation({
     summary: 'Get a random question',

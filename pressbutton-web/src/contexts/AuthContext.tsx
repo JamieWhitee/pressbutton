@@ -40,14 +40,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
             accessToken: token,
             tokenType: 'Bearer'
           });
-          
+
           // Token exists, try to get user profile
           const userData = await apiClient.getProfile();
           setUser(userData);
         }
       } catch (error) {
-        // Token invalid or expired, clear it
-        apiClient.logout();
+        // Token invalid or expired, clear it silently
+        console.debug('Auth token validation failed:', error);
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('auth_token');
+        }
         enterpriseApiClient.clearAuthTokens();
         setUser(null);
       } finally {
@@ -63,7 +66,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const response = await apiClient.login({ email, password });
       setUser(response.user);
-      
+
       // Sync token to enterprise API client for questions API
       // 同步token到企业API客户端用于问题API
       const token = apiClient.getToken();
@@ -88,7 +91,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const userData = await apiClient.register(requestData);
       // After registration, automatically log them in
       await login(email, password);
-      
+
       // Token sync is handled in login function
       // token同步在login函数中处理
     } catch (error) {
@@ -101,7 +104,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const response = await apiClient.createGuestAccount();
       setUser(response.user);
-      
+
       // Sync token to enterprise API client for questions API
       // 同步token到企业API客户端用于问题API
       const token = apiClient.getToken();

@@ -6,6 +6,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { QuestionsModule } from './modules/questions/questions.module';
+import { CommentsModule } from './modules/comments/comments.module';
 // import { QuestionsService } from './questions/questions.service';
 // Removed because the file does not exist, which caused a module not found error.
 @Module({
@@ -13,10 +14,11 @@ import { QuestionsModule } from './modules/questions/questions.module';
     ConfigModule.forRoot({ isGlobal: true }),
 
     // Rate limiting - prevents brute force attacks
+    // 速率限制 - 防止暴力攻击
     ThrottlerModule.forRoot([
       {
-        ttl: 60000, // Time window in milliseconds (60 seconds)
-        limit: 10, // Maximum requests per time window
+        ttl: parseInt(process.env.THROTTLE_TTL || '60') * 1000, // Time window in milliseconds
+        limit: parseInt(process.env.THROTTLE_LIMIT || '100'), // Maximum requests per time window (increased for development)
       },
     ]),
 
@@ -37,6 +39,7 @@ import { QuestionsModule } from './modules/questions/questions.module';
     PrismaModule,
     AuthModule,
     QuestionsModule,
+    CommentsModule, // Add comments module for comment operations
   ],
   providers: [
     // Apply rate limiting globally to all routes

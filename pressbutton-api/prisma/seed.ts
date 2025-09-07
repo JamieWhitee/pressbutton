@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 // @ts-nocheck
 import { PrismaClient, ButtonChoice } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
@@ -112,7 +115,7 @@ async function main() {
     '我的选择可能会随着年龄增长而改变。',
     '这考验的不仅是理性，还有情感。',
     '现实中很少有这么极端的选择。',
-    '但如果真的面临这种选择，我可能会崩溃。'
+    '但如果真的面临这种选择，我可能会崩溃。',
   ];
 
   // 创建密码哈希 / Create password hash (same for all users)
@@ -148,7 +151,8 @@ async function main() {
     // 为每个用户创建2个问题
     for (let questionIndex = 0; questionIndex < 2; questionIndex++) {
       // 从模板中选择问题（循环使用）
-      const templateIndex = (userIndex * 2 + questionIndex) % questionTemplates.length;
+      const templateIndex =
+        (userIndex * 2 + questionIndex) % questionTemplates.length;
       const template = questionTemplates[templateIndex];
 
       const question = await prisma.question.upsert({
@@ -169,9 +173,15 @@ async function main() {
   console.log(`✅ Created ${questions.length} questions successfully!`);
 
   // 为每个问题创建评论和投票 / Create comments and votes for each question
-  for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
+  for (
+    let questionIndex = 0;
+    questionIndex < questions.length;
+    questionIndex++
+  ) {
     const question = questions[questionIndex];
-    console.log(`💬 Creating comments and votes for question ${question.id}...`);
+    console.log(
+      `💬 Creating comments and votes for question ${question.id}...`,
+    );
 
     // 为每个问题创建2个评论 / Create 2 comments for each question
     for (let commentIndex = 0; commentIndex < 2; commentIndex++) {
@@ -180,7 +190,9 @@ async function main() {
       const commenter = users[randomUserIndex];
 
       // 随机选择一个评论模板
-      const randomCommentIndex = Math.floor(Math.random() * commentTemplates.length);
+      const randomCommentIndex = Math.floor(
+        Math.random() * commentTemplates.length,
+      );
       const commentContent = commentTemplates[randomCommentIndex];
 
       await prisma.comment.create({
@@ -205,13 +217,15 @@ async function main() {
         attempts++;
       } while (votersUsed.has(randomUserIndex) && attempts < 20); // 最多尝试20次避免无限循环
 
-      if (attempts < 20) { // 只有找到可用用户才创建投票
+      if (attempts < 20) {
+        // 只有找到可用用户才创建投票
         const voter = users[randomUserIndex];
         votersUsed.add(randomUserIndex);
 
         // 随机选择投票选项 / Randomly choose vote option
         const choices: ButtonChoice[] = ['PRESS', 'DONT_PRESS'];
-        const randomChoice = choices[Math.floor(Math.random() * choices.length)];
+        const randomChoice =
+          choices[Math.floor(Math.random() * choices.length)];
 
         await prisma.vote.create({
           data: {
@@ -223,7 +237,9 @@ async function main() {
       }
     }
 
-    console.log(`   ✅ Created 2 comments and ${voteCount} votes for question ${question.id}`);
+    console.log(
+      `   ✅ Created 2 comments and ${voteCount} votes for question ${question.id}`,
+    );
   }
 
   console.log('🎉 Seed data created successfully!');

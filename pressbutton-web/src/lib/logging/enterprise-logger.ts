@@ -357,24 +357,46 @@ class EnterpriseLogger {
     const prefix = `[${levelNames[logEntry.level]}] ${logEntry.timestamp.toISOString()}`;
     const style = `color: ${colors[logEntry.level]}; font-weight: bold;`;
 
-    // Use appropriate console method based on log level
-    switch (logEntry.level) {
-      case LogLevel.DEBUG:
-        console.debug(`%c${prefix}`, style, logEntry.message, logEntry.metadata);
-        break;
-      case LogLevel.INFO:
-        console.info(`%c${prefix}`, style, logEntry.message, logEntry.metadata);
-        break;
-      case LogLevel.WARN:
-        console.warn(`%c${prefix}`, style, logEntry.message, logEntry.metadata);
-        break;
-      case LogLevel.ERROR:
-      case LogLevel.CRITICAL:
-        console.error(`%c${prefix}`, style, logEntry.message, logEntry.metadata);
-        if (logEntry.stackTrace) {
-          console.error('Stack Trace:', logEntry.stackTrace);
-        }
-        break;
+    // Safely handle metadata to prevent circular reference errors
+    let safeMetadata = {};
+    try {
+      if (logEntry.metadata) {
+        // Try to create a safe copy of metadata
+        safeMetadata = JSON.parse(JSON.stringify(logEntry.metadata));
+      }
+    } catch (metadataError) {
+      // If metadata can't be serialized, create a simple representation
+      safeMetadata = {
+        error: 'Metadata serialization failed',
+        type: typeof logEntry.metadata,
+        keys: logEntry.metadata ? Object.keys(logEntry.metadata).slice(0, 10) : []
+      };
+    }
+
+    // Use appropriate console method based on log level with error handling
+    try {
+      switch (logEntry.level) {
+        case LogLevel.DEBUG:
+          console.debug(`%c${prefix}`, style, logEntry.message, safeMetadata);
+          break;
+        case LogLevel.INFO:
+          console.info(`%c${prefix}`, style, logEntry.message, safeMetadata);
+          break;
+        case LogLevel.WARN:
+          console.warn(`%c${prefix}`, style, logEntry.message, safeMetadata);
+          break;
+        case LogLevel.ERROR:
+        case LogLevel.CRITICAL:
+          console.error(`%c${prefix}`, style, logEntry.message, safeMetadata);
+          if (logEntry.stackTrace) {
+            console.error('Stack Trace:', logEntry.stackTrace);
+          }
+          break;
+      }
+    } catch (error) {
+      // Ultimate fallback for any console logging errors
+      console.error('Logger error:', String(error));
+      console.error('Original message:', logEntry.message);
     }
   }
 
