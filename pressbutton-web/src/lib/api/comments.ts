@@ -22,7 +22,7 @@ export interface Comment {
 
 export interface CreateCommentRequest {
   content: string;
-  questionId: string;
+  questionId: number;
 }
 
 export interface UpdateCommentRequest {

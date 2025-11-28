@@ -219,7 +219,7 @@ export default function HomePage() {
       setIsSubmittingComment(true);
 
       await commentsApi.create({
-        questionId: String(currentQuestion.id),
+        questionId: currentQuestion.id,
         content: newComment.trim()
       });
 

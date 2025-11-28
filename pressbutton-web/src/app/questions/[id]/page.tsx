@@ -164,7 +164,7 @@ export default function QuestionDetailsPage() {
 
       const commentData: CreateCommentRequest = {
         content: newComment.trim(),
-        questionId: String(questionId),
+        questionId: questionId,
       };
 
       await commentsApi.create(commentData);
