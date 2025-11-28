@@ -174,11 +174,16 @@ export default function HomePage() {
 
       const commentsData = await commentsApi.getByQuestion(questionId.toString());
 
+      console.log('Comments data received:', commentsData, 'Type:', typeof commentsData, 'Is Array:', Array.isArray(commentsData));
+
       if (commentsData) {
+        // Ensure commentsData is always an array
+        const commentsArray = Array.isArray(commentsData) ? commentsData : [];
+
         if (page === 1) {
-          setComments(commentsData || []);
+          setComments(commentsArray);
         } else {
-          setComments(prev => [...prev, ...(commentsData || [])]);
+          setComments(prev => [...prev, ...commentsArray]);
         }
 
         // Note: The API doesn't return pagination info, so we'll show all comments
