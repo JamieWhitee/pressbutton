@@ -96,9 +96,8 @@ export class QuestionsController {
 
       this.logger.log(`📊 Controller: Fetching top ${validLimit} questions`);
 
-      const topQuestions = await this.questionsService.getTopQuestions(
-        validLimit,
-      );
+      const topQuestions =
+        await this.questionsService.getTopQuestions(validLimit);
 
       this.logger.log(
         `✅ Controller: Successfully retrieved ${topQuestions.length} top questions`,

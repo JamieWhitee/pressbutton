@@ -47,6 +47,5 @@
 
   // Reduce extension host restarts
   "extensions.autoUpdate": false,
-  "extensions.autoCheckUpdates": false,
-  "prisma.pinToPrisma6": true
+  "extensions.autoCheckUpdates": false
 }

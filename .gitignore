@@ -48,6 +48,16 @@ coverage/
 prisma/dev.db
 prisma/dev.db-journal
 
+# VS Code settings (keep local settings private)
+.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Temporary files
+*.tmp
+*.temp
+
 # Temporary folders
 tmp/
 temp/

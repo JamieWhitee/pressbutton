@@ -104,7 +104,9 @@ export class QuestionsService {
    * @returns 按投票数排序的问题列表 / List of questions sorted by vote count
    */
   async getTopQuestions(limit: number = 15): Promise<QuestionsDto[]> {
-    this.logger.log(`🏆 Service: Fetching top ${limit} questions by vote count`);
+    this.logger.log(
+      `🏆 Service: Fetching top ${limit} questions by vote count`,
+    );
 
     try {
       const topQuestions = await this.prisma.question.findMany({
@@ -117,13 +119,13 @@ export class QuestionsService {
         include: {
           _count: {
             select: {
-              votes: true,      // 包含投票总数 / Include vote count
-              comments: true    // 包含评论总数 / Include comment count
+              votes: true, // 包含投票总数 / Include vote count
+              comments: true, // 包含评论总数 / Include comment count
             },
           },
           votes: {
             select: {
-              choice: true,     // 包含投票选择用于计算百分比 / Include vote choices for percentage calculation
+              choice: true, // 包含投票选择用于计算百分比 / Include vote choices for percentage calculation
             },
           },
           author: {

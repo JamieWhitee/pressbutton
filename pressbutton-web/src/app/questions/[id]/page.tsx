@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Navigation from "../../../components/Navigation";
 import { useAuth } from "../../../contexts/AuthContext";
-import { questionsApi, type Question, type VoteData } from "../../../lib/api/questions";
-import { commentsApi, type Comment, type CreateCommentData } from "../../../lib/api/comments";
+import { questionsApi, type Question, type VoteRequest } from "../../../lib/api/questions-new";
+import { commentsApi, type Comment, type CreateCommentRequest } from "../../../lib/api/comments";
 
 /**
  * Question Details Page - Shows question details with comments

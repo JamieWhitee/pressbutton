@@ -47,7 +47,7 @@ describe('QuestionsService', () => {
       ];
 
       // Directly access the mock function from the provider's value to avoid unbound method issues
-      const findManyMock = (prisma.question.findMany as jest.Mock);
+      const findManyMock = prisma.question.findMany as jest.Mock;
       findManyMock.mockResolvedValue(mockQuestions);
 
       const result = await service.getAllQuestions();

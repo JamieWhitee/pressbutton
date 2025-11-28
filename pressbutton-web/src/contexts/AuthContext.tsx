@@ -1,8 +1,7 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { apiClient } from '../lib/api';
-import { enterpriseApiClient } from '../lib/api/enterprise-api-client';
+import { authApi } from '../lib/api/auth';
 import type { User, RegisterRequest } from '../lib/api';
 
 // 1. Define the context interface
@@ -32,26 +31,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const token = apiClient.getToken();
-        if (token) {
-          // Sync existing token to enterprise API client
-          // 同步现有token到企业API客户端
-          enterpriseApiClient.setAuthTokens({
-            accessToken: token,
-            tokenType: 'Bearer'
-          });
-
-          // Token exists, try to get user profile
-          const userData = await apiClient.getProfile();
-          setUser(userData);
-        }
+        // Check if user is already logged in with profile data
+        const userData = await authApi.getProfile();
+        setUser(userData);
       } catch (error) {
         // Token invalid or expired, clear it silently
         console.debug('Auth token validation failed:', error);
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('auth_token');
-        }
-        enterpriseApiClient.clearAuthTokens();
+        authApi.logout();
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -64,18 +50,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // 6. Login function
   const login = async (email: string, password: string) => {
     try {
-      const response = await apiClient.login({ email, password });
+      const response = await authApi.login({ email, password });
       setUser(response.user);
-
-      // Sync token to enterprise API client for questions API
-      // 同步token到企业API客户端用于问题API
-      const token = apiClient.getToken();
-      if (token) {
-        enterpriseApiClient.setAuthTokens({
-          accessToken: token,
-          tokenType: 'Bearer'
-        });
-      }
     } catch (error) {
       throw error; // Let the component handle the error
     }
@@ -88,12 +64,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (name) {
         requestData.name = name;
       }
-      const userData = await apiClient.register(requestData);
-      // After registration, automatically log them in
-      await login(email, password);
-
-      // Token sync is handled in login function
-      // token同步在login函数中处理
+      const response = await authApi.register(requestData);
+      setUser(response.user);
     } catch (error) {
       throw error; // Let the component handle the error
     }
@@ -102,18 +74,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // 8. Create guest account function
   const createGuestAccount = async () => {
     try {
-      const response = await apiClient.createGuestAccount();
+      const response = await authApi.guestSignup();
       setUser(response.user);
-
-      // Sync token to enterprise API client for questions API
-      // 同步token到企业API客户端用于问题API
-      const token = apiClient.getToken();
-      if (token) {
-        enterpriseApiClient.setAuthTokens({
-          accessToken: token,
-          tokenType: 'Bearer'
-        });
-      }
       // Guest credentials are available in response.guestCredentials if needed
     } catch (error) {
       throw error; // Let the component handle the error
@@ -122,8 +84,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // 9. Logout function
   const logout = () => {
-    apiClient.logout();
-    enterpriseApiClient.clearAuthTokens(); // Clear enterprise API client tokens too
+    authApi.logout();
     setUser(null);
   };
 

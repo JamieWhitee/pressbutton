@@ -148,10 +148,10 @@ export class AuthService {
     const randomSuffix = Math.random().toString(36).substring(2, 8); // 6 random chars
     const username = `guest_${timestamp}_${randomSuffix}`;
     const email = `${username}@pressbutton.guest`;
-    
+
     // Generate a 6-digit random password
     const password = Math.floor(100000 + Math.random() * 900000).toString();
-    
+
     // Hash the password
     const hashedPassword = await this.hashPassword(password);
 

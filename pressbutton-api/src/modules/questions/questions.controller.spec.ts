@@ -79,7 +79,9 @@ describe('QuestionsController', () => {
     it('should handle service errors properly', async () => {
       // Arrange: Mock service to throw error
       const errorMessage = 'Database connection failed';
-      jest.spyOn(service, 'getAllQuestions').mockRejectedValue(new Error(errorMessage));
+      jest
+        .spyOn(service, 'getAllQuestions')
+        .mockRejectedValue(new Error(errorMessage));
 
       // Act & Assert: Expect the error to be thrown
       await expect(controller.getAllQuestions()).rejects.toThrow(errorMessage);
