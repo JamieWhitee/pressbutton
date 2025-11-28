@@ -108,17 +108,24 @@ export default function HomePage() {
       setIsVoting(true);
       setSelectedOption(option);
 
-      await questionsApi.vote(currentQuestion.id, { choice: option });
+      console.log('Submitting vote:', { questionId: currentQuestion.id, choice: option, user });
+
+      const voteResult = await questionsApi.vote(currentQuestion.id, { choice: option });
+      console.log('Vote submitted successfully:', voteResult);
 
       setHasVoted(true);
 
       // Refresh question data to get updated vote counts and statistics
+      console.log('Fetching updated question data...');
       const updatedQuestion = await questionsApi.getById(String(currentQuestion.id));
+      console.log('Updated question:', updatedQuestion);
+
       if (updatedQuestion) {
         setCurrentQuestion(updatedQuestion);
       }
     } catch (err: any) {
       console.error('Error submitting vote:', err);
+      console.error('Error details:', { message: err.message, stack: err.stack, response: err.response });
       setError(err.message || 'Failed to submit vote. Please try again.');
       setSelectedOption(null);
       setHasVoted(false);

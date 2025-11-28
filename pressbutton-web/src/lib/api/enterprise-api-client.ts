@@ -380,6 +380,13 @@ export class EnterpriseApiClient {
     if (this.authTokens.accessToken) {
       const tokenType = this.authTokens.tokenType || 'Bearer';
       headers['Authorization'] = `${tokenType} ${this.authTokens.accessToken}`;
+      console.log('🔐 Auth token added to request:', {
+        hasToken: true,
+        tokenType,
+        tokenPreview: this.authTokens.accessToken.substring(0, 20) + '...'
+      });
+    } else {
+      console.warn('⚠️ No auth token available for request');
     }
 
     const requestConfig: RequestInit = {
@@ -480,6 +487,11 @@ export class EnterpriseApiClient {
     if (typeof window === 'undefined') return;
 
     try {
+      // Store access token with the same key used by login
+      if (this.authTokens.accessToken) {
+        localStorage.setItem('auth_token', this.authTokens.accessToken);
+      }
+      // Also store full token object for compatibility
       localStorage.setItem('enterprise_auth_tokens', JSON.stringify({
         ...this.authTokens,
         expiresAt: this.authTokens.expiresAt?.toISOString()
@@ -498,10 +510,21 @@ export class EnterpriseApiClient {
     if (typeof window === 'undefined') return;
 
     try {
+      // First try to load from auth_token (used by login)
+      const authToken = localStorage.getItem('auth_token');
+      if (authToken) {
+        this.authTokens = {
+          accessToken: authToken,
+          tokenType: 'Bearer'
+        };
+      }
+
+      // Then try to load full token object
       const stored = localStorage.getItem('enterprise_auth_tokens');
       if (stored) {
         const tokens = JSON.parse(stored);
         this.authTokens = {
+          ...this.authTokens, // Keep auth_token if it exists
           ...tokens,
           expiresAt: tokens.expiresAt ? new Date(tokens.expiresAt) : undefined
         };
@@ -520,6 +543,7 @@ export class EnterpriseApiClient {
     if (typeof window === 'undefined') return;
 
     try {
+      localStorage.removeItem('auth_token');
       localStorage.removeItem('enterprise_auth_tokens');
     } catch (error) {
       if (this.config.enableLogging) {
