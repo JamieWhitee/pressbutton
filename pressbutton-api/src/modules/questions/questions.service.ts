@@ -290,6 +290,22 @@ export class QuestionsService {
 
       const question = await this.prisma.question.findUnique({
         where: { id: questionId },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          votes: true,
+          _count: {
+            select: {
+              votes: true,
+              comments: true,
+            },
+          },
+        },
       });
 
       // Handle the case where the question is not found with a descriptive error

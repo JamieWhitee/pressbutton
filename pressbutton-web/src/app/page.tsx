@@ -117,7 +117,7 @@ export default function HomePage() {
 
       // Refresh question data to get updated vote counts and statistics
       console.log('Fetching updated question data...');
-      const updatedQuestion = await questionsApi.getById(String(currentQuestion.id));
+      const updatedQuestion = await questionsApi.getById(currentQuestion.id);
       console.log('Updated question:', updatedQuestion);
 
       if (updatedQuestion) {
