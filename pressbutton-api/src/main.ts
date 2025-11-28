@@ -19,10 +19,14 @@ async function bootstrap() {
   // - Strict-Transport-Security: ... (forces HTTPS connections)
   app.use(helmet());
 
+  // Get ConfigService for environment variables
+  const configService = app.get(ConfigService);
+
   // CORS configuration allows cross-origin requests
-  // Without this, browsers would block requests from frontend (port 3000) to backend (port 3001)
+  // Without this, browsers would block requests from frontend to backend
+  const corsOrigin = configService.get('CORS_ORIGIN') || '*';
   app.enableCors({
-    origin: true, // Allow all origins in development
+    origin: corsOrigin, // Allow specific origin from env or all origins
     credentials: true, // Allow cookies and auth headers
   });
 
@@ -53,7 +57,6 @@ async function bootstrap() {
   SwaggerModule.setup('/docs', app, document);
 
   // Get port from environment variables or default to 3001
-  const configService = app.get(ConfigService);
   const port = Number(configService.get('PORT') ?? 3001);
 
   // Log startup information
