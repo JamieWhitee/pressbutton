@@ -112,9 +112,8 @@ export default function HomePage() {
 
       setHasVoted(true);
 
-      // Refresh question data to get updated vote counts
-      const questions = await questionsApi.getAll();
-      const updatedQuestion = questions.find(q => q.id === currentQuestion.id);
+      // Refresh question data to get updated vote counts and statistics
+      const updatedQuestion = await questionsApi.getById(String(currentQuestion.id));
       if (updatedQuestion) {
         setCurrentQuestion(updatedQuestion);
       }
@@ -122,6 +121,7 @@ export default function HomePage() {
       console.error('Error submitting vote:', err);
       setError(err.message || 'Failed to submit vote. Please try again.');
       setSelectedOption(null);
+      setHasVoted(false);
     } finally {
       setIsVoting(false);
     }
@@ -235,15 +235,22 @@ export default function HomePage() {
    * @returns Object with percentage breakdowns of votes
    */
   const getVoteStats = (): VoteStats => {
-    if (!currentQuestion?._count?.votes || currentQuestion._count.votes === 0) {
+    if (!currentQuestion?.votes || currentQuestion.votes.length === 0) {
       return { pressVotes: 50, notPressVotes: 50 };
     }
 
-    // For now, showing 50/50 split - this would be replaced with actual vote data
-    // when the backend provides vote breakdown statistics
+    // Count PRESS and DONT_PRESS votes
+    const pressCount = currentQuestion.votes.filter(v => v.choice === 'PRESS').length;
+    const dontPressCount = currentQuestion.votes.filter(v => v.choice === 'DONT_PRESS').length;
+    const total = pressCount + dontPressCount;
+
+    if (total === 0) {
+      return { pressVotes: 50, notPressVotes: 50 };
+    }
+
     return {
-      pressVotes: 50,
-      notPressVotes: 50
+      pressVotes: Math.round((pressCount / total) * 100),
+      notPressVotes: Math.round((dontPressCount / total) * 100)
     };
   };
 
