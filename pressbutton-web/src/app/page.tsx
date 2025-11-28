@@ -665,7 +665,7 @@ export default function HomePage() {
                   </h3>
 
                   {/* Only show detailed results to logged-in users who have voted */}
-                  {user && hasVoted && currentQuestion._count ? (
+                  {user && hasVoted ? (
                     <div style={{
                       display: 'grid',
                       gridTemplateColumns: '1fr 1fr',
