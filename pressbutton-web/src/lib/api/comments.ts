@@ -39,8 +39,14 @@ class CommentsApiService {
    * Get all comments for a specific question
    */
   async getByQuestion(questionId: string): Promise<Comment[]> {
-    const response = await apiClient.get<Comment[]>(`/comments/question/${questionId}`);
-    return response;
+    const response = await apiClient.get<any>(`/comments/question/${questionId}`);
+    // Backend returns paginated response with data array
+    // Extract the data field which contains the actual comments array
+    if (response && typeof response === 'object' && 'data' in response) {
+      return Array.isArray(response.data) ? response.data : [];
+    }
+    // Fallback: if response is already an array, return it
+    return Array.isArray(response) ? response : [];
   }
 
   /**

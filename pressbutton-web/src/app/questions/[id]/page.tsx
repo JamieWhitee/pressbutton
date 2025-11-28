@@ -112,12 +112,12 @@ export default function QuestionDetailsPage() {
    */
   const handleVote = async (choice: 'PRESS' | 'DONT_PRESS') => {
     if (!user) {
-      alert('请先登录再投票');
+      alert('Please login to vote');
       return;
     }
 
     if (hasVoted) {
-      alert('你已经对这个问题投过票了');
+      alert('You have already voted on this question');
       return;
     }
 
@@ -137,7 +137,7 @@ export default function QuestionDetailsPage() {
     } catch (error) {
       console.error('Error voting:', error);
       setSelectedOption(null);
-      alert(error instanceof Error ? error.message : '投票失败，请重试');
+      alert(error instanceof Error ? error.message : 'Failed to vote, please try again');
     } finally {
       setIsVoting(false);
     }
@@ -150,17 +150,17 @@ export default function QuestionDetailsPage() {
     e.preventDefault();
 
     if (!user) {
-      alert('请先登录再评论');
+      alert('Please login to comment');
       return;
     }
 
     if (!newComment.trim()) {
-      alert('评论内容不能为空');
+      alert('Comment cannot be empty');
       return;
     }
 
     if (newComment.length > 1000) {
-      alert('评论内容不能超过1000字符');
+      alert('Comment cannot exceed 1000 characters');
       return;
     }
 
@@ -179,7 +179,7 @@ export default function QuestionDetailsPage() {
       await fetchComments(1, false);
     } catch (error) {
       console.error('Error creating comment:', error);
-      alert(error instanceof Error ? error.message : '发表评论失败，请重试');
+      alert(error instanceof Error ? error.message : 'Failed to post comment, please try again');
     } finally {
       setIsSubmittingComment(false);
     }
@@ -203,16 +203,16 @@ export default function QuestionDetailsPage() {
     const diffInSeconds = Math.floor((now.getTime() - commentTime.getTime()) / 1000);
 
     if (diffInSeconds < 60) {
-      return '刚刚';
+      return 'Just now';
     } else if (diffInSeconds < 3600) {
       const minutes = Math.floor(diffInSeconds / 60);
-      return `${minutes}分钟前`;
+      return `${minutes} minutes ago`;
     } else if (diffInSeconds < 86400) {
       const hours = Math.floor(diffInSeconds / 3600);
-      return `${hours}小时前`;
+      return `${hours} hours ago`;
     } else {
       const days = Math.floor(diffInSeconds / 86400);
-      return `${days}天前`;
+      return `${days} days ago`;
     }
   };
 
@@ -220,7 +220,7 @@ export default function QuestionDetailsPage() {
    * Get user display name
    */
   const getUserDisplayName = (user: Comment['user']): string => {
-    return user.name || user.email.split('@')[0] || '匿名用户';
+    return user.name || user.email.split('@')[0] || 'Anonymous';
   };
 
   // Initial data loading
@@ -257,7 +257,7 @@ export default function QuestionDetailsPage() {
         }}>
           <div style={{ fontSize: '3rem', marginBottom: '20px' }}>🎲</div>
           <h2 style={{ fontSize: '1.5rem', color: '#333', margin: 0 }}>
-            加载问题详情中...
+            Loading question details...
           </h2>
         </div>
       </div>
@@ -272,13 +272,13 @@ export default function QuestionDetailsPage() {
           <div className="max-w-4xl mx-auto">
             <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 text-center">
               <div className="text-red-500 text-6xl mb-4">😞</div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">问题未找到</h2>
-              <p className="text-gray-600 mb-6">{questionError || '这个问题可能已被删除或不存在'}</p>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Question Not Found</h2>
+              <p className="text-gray-600 mb-6">{questionError || 'This question may have been deleted or does not exist'}</p>
               <button
                 onClick={() => router.push('/')}
                 className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-200"
               >
-                返回首页
+                Back to Home
               </button>
             </div>
           </div>
@@ -334,7 +334,7 @@ export default function QuestionDetailsPage() {
                 e.currentTarget.style.color = '#666';
               }}
             >
-              ← 返回
+              ← Back
             </button>
             <h1 style={{
               fontSize: '1.5rem',
@@ -396,7 +396,7 @@ export default function QuestionDetailsPage() {
               marginBottom: '12px', // Reduced from 15px
               color: '#495057'
             }}>
-              📊 投票统计
+              📊 Vote Statistics
             </h3>
 
             {/* Total Votes */}
@@ -405,7 +405,7 @@ export default function QuestionDetailsPage() {
               color: '#666',
               marginBottom: '15px' // Reduced from 20px
             }}>
-              总计 {question._count ? question._count.votes : 0} 人投票
+              Total {question._count ? question._count.votes : 0} votes
             </div>
 
             {/* Vote Statistics Grid */}
@@ -422,14 +422,14 @@ export default function QuestionDetailsPage() {
                 borderRadius: '10px',
                 textAlign: 'center'
               }}>
-                <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>我会按下</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>I WILL PRESS</div>
                 <div style={{ fontSize: '1.8rem', fontWeight: 'bold', margin: '10px 0' }}>
                   {question._count && question._count.votes > 0 && question.votes
                     ? Math.round((question.votes.filter(vote => vote.choice === 'PRESS').length / question._count.votes) * 100)
                     : 0}%
                 </div>
                 <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>
-                  ({question.votes ? question.votes.filter(vote => vote.choice === 'PRESS').length : 0} 人)
+                  ({question.votes ? question.votes.filter(vote => vote.choice === 'PRESS').length : 0} votes)
                 </div>
               </div>
 
@@ -440,14 +440,14 @@ export default function QuestionDetailsPage() {
                 borderRadius: '10px',
                 textAlign: 'center'
               }}>
-                <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>我不会按下</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>I WILL NOT PRESS</div>
                 <div style={{ fontSize: '1.8rem', fontWeight: 'bold', margin: '10px 0' }}>
                   {question._count && question._count.votes > 0 && question.votes
                     ? Math.round((question.votes.filter(vote => vote.choice === 'DONT_PRESS').length / question._count.votes) * 100)
                     : 0}%
                 </div>
                 <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>
-                  ({question.votes ? question.votes.filter(vote => vote.choice === 'DONT_PRESS').length : 0} 人)
+                  ({question.votes ? question.votes.filter(vote => vote.choice === 'DONT_PRESS').length : 0} votes)
                 </div>
               </div>
             </div>
