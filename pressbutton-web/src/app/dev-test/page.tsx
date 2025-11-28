@@ -189,10 +189,10 @@ export default function DevTestPage() {
                 fontWeight: 'bold'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#ff5252';
+                (e.target as HTMLButtonElement).style.backgroundColor = '#ff5252';
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#ff6b6b';
+                (e.target as HTMLButtonElement).style.backgroundColor = '#ff6b6b';
               }}
             >
               🧹 Clear Results
