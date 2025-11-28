@@ -12,7 +12,7 @@
     "type-check": "tsc --noEmit",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "prepare": "husky"
+    "prepare": "node -e \"try { require('husky').install() } catch (e) { if (process.env.CI !== 'true') console.log('Husky install failed:', e.message) }\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
