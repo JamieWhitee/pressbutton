@@ -21,4 +21,11 @@ export class AuthResponseDto {
 
   // Token expiration time in seconds (optional, helpful for frontend)
   expires_in?: number;
+
+  // Guest account credentials (only included for guest account creation)
+  // Allows frontend to show user their temporary credentials if needed
+  guestCredentials?: {
+    email: string;
+    password: string;
+  };
 }

@@ -1,16 +1,19 @@
 # Copilot AI Coding Agent Instructions
 
+## 项目背景
+这个项目是模仿这个网站(https://willyoupressthebutton.com),采用instagram风格配色,主要目的是实现用户注册登录,选择是否按下按钮,创建问题,发布评论
+
 ## 项目架构概览
   - `pressbutton-api/`：NestJS 服务，Prisma ORM，`src/modules/` 按功能模块划分（如 users、comments）。
   - `pressbutton-web/`：Next.js 15+ App Router，`src/app/` 按业务分文件夹（如 users、ranks、questions、comments）。
 
 ## 关键开发流程
-  - 启动：`npm run dev`（端口 3000）
+  - 启动：`cd /Users/ibairah/vscodeprojects/pressbutton/pressbutton-web && npm run dev`（端口 3000）
   - 主要入口：`src/app/page.tsx`，页面按目录自动路由。
   - 表单校验统一用 `react-hook-form` + `Yup`，示例见 `src/app/users/login/page.tsx`。
   - 问题详情页需支持评论功能，建议在 `questions/[id]/page.tsx` 及 `comments/` 相关目录实现，前后端均需支持评论的增删查。
   - 样式采用 Tailwind CSS。
-  - 启动：`npm run start:dev`（端口 3001，见 .env 配置）
+  - 启动：`cd /Users/ibairah/vscodeprojects/pressbutton/pressbutton-api && pm run start:dev`（端口 3001，见 .env 配置）
   - 主要入口：`src/main.ts`，业务模块在 `src/modules/` 下。
   - 数据库建模与迁移用 Prisma，schema 见 `prisma/schema.prisma`，评论相关表结构需同步维护。
   - 单元测试：`npm run test`，e2e 测试：`npm run test:e2e`
@@ -55,6 +58,7 @@
 
 ## AI 代码注释与教学风格要求
 - 作为 AI 代码助手，输出代码时需像老师一样工作：
+  - 对每一段用户的对话,纠正英语的表达语法
   - 对每一段代码、每个函数、每个复杂结构都要用英文详细注释，解释写了什么、为什么要这样写。
   - 对于初学者容易困惑的类型、解构、三元表达式、可选链等结构，注释中要逐步拆解说明其含义和作用。
   - 回答问题时，先引导用户思考和表达，再给出提示和反馈，避免直接给出完整代码，鼓励自主实践。

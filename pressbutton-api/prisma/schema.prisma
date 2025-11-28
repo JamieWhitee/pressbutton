@@ -8,16 +8,17 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  email     String     @unique
-  name      String?
-  password  String
-  avatar    String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  comments  Comment[]
-  questions Question[]
-  votes     Vote[]
+  id          Int         @id @default(autoincrement())
+  email       String      @unique
+  name        String?
+  password    String
+  avatar      String?
+  accountType AccountType @default(REGULAR)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  comments    Comment[]
+  questions   Question[]
+  votes       Vote[]
 
   @@map("users")
 }
@@ -65,4 +66,9 @@ model Comment {
 enum ButtonChoice {
   PRESS
   DONT_PRESS
+}
+
+enum AccountType {
+  REGULAR
+  GUEST
 }

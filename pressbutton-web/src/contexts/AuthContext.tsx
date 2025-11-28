@@ -1,8 +1,8 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { apiClient } from '../lib/api';
-import type { User } from '../lib/api';
+import { authApi } from '../lib/api/auth';
+import type { User, RegisterRequest } from '../lib/api';
 
 // 1. Define the context interface
 interface AuthContextType {
@@ -10,6 +10,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name?: string) => Promise<void>;
+  createGuestAccount: () => Promise<void>;
   logout: () => void;
 }
 
@@ -30,15 +31,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const token = apiClient.getToken();
-        if (token) {
-          // Token exists, try to get user profile
-          const userData = await apiClient.getProfile();
-          setUser(userData);
-        }
+        // Check if user is already logged in with profile data
+        const userData = await authApi.getProfile();
+        setUser(userData);
       } catch (error) {
-        // Token invalid or expired, clear it
-        apiClient.logout();
+        // Token invalid or expired, clear it silently
+        console.debug('Auth token validation failed:', error);
+        authApi.logout();
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -51,7 +50,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // 6. Login function
   const login = async (email: string, password: string) => {
     try {
-      const response = await apiClient.login({ email, password });
+      const response = await authApi.login({ email, password });
       setUser(response.user);
     } catch (error) {
       throw error; // Let the component handle the error
@@ -61,26 +60,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // 7. Register function
   const register = async (email: string, password: string, name?: string) => {
     try {
-      const userData = await apiClient.register({ email, password, name });
-      // After registration, automatically log them in
-      await login(email, password);
+      const requestData: RegisterRequest = { email, password };
+      if (name) {
+        requestData.name = name;
+      }
+      const response = await authApi.register(requestData);
+      setUser(response.user);
     } catch (error) {
       throw error; // Let the component handle the error
     }
   };
 
-  // 8. Logout function
+  // 8. Create guest account function
+  const createGuestAccount = async () => {
+    try {
+      const response = await authApi.guestSignup();
+      setUser(response.user);
+      // Guest credentials are available in response.guestCredentials if needed
+    } catch (error) {
+      throw error; // Let the component handle the error
+    }
+  };
+
+  // 9. Logout function
   const logout = () => {
-    apiClient.logout();
+    authApi.logout();
     setUser(null);
   };
 
-  // 9. Context value
+  // 10. Context value
   const value: AuthContextType = {
     user,
     isLoading,
     login,
     register,
+    createGuestAccount,
     logout,
   };
 

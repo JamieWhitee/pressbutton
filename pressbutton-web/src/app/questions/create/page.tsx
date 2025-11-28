@@ -7,21 +7,27 @@ import Input from '../../../components/Input';
 import Button from '../../../components/Button';
 import Navigation from '../../../components/Navigation';
 import { useRouter } from 'next/navigation';
+import { questionsApi } from '../../../lib/api/questions';
+import { useAuth } from '../../../contexts/AuthContext';
+import ErrorMessage from '../../../components/ErrorMessage';
 
 export default function CreateQuestionPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { user } = useAuth();
 
   // Validation schema for question creation
+  // 问题创建的验证模式 - 与后端验证保持一致
   const schema = yup.object({
     positiveOutcome: yup.string()
-      .required("Positive outcome is required")
-      .min(10, "Please provide more detail (at least 10 characters)")
-      .max(500, "Keep it reasonable (max 500 characters)"),
+      .required("好的结果是必需的")
+      .min(5, "请提供更多细节（至少5个字符）")
+      .max(500, "保持合理长度（最多500个字符）"),
     negativeOutcome: yup.string()
-      .required("Negative outcome is required")
-      .min(10, "Please provide more detail (at least 10 characters)")
-      .max(500, "Keep it reasonable (max 500 characters)"),
+      .required("坏的结果是必需的")
+      .min(5, "请提供更多细节（至少5个字符）")
+      .max(500, "保持合理长度（最多500个字符）"),
   });
 
   const { register, handleSubmit, formState: { errors } } = useForm({
@@ -67,31 +73,66 @@ export default function CreateQuestionPage() {
             backgroundClip: 'text',
             width: '100%'
           }}>
-            Create Button Dilemma
+            创建按钮困境
           </h1>
 
           <p style={{
             textAlign: 'center',
             color: '#666',
-            marginBottom: '30px',
+            marginBottom: '20px',
             fontSize: '1.1rem'
           }}>
-            Create a moral dilemma: What good and bad things happen if someone presses the button?
+            创建一个道德困境：如果有人按下按钮，会发生什么好事和坏事？
           </p>
 
+          {/* Error message display / 错误消息显示 */}
+          {error && (
+            <div style={{ width: '100%', marginBottom: '20px' }}>
+              <ErrorMessage error={error} />
+            </div>
+          )}
+
           <form onSubmit={handleSubmit(async (data) => {
+            // Check if user is authenticated before creating question
+            // 在创建问题前检查用户是否已认证
+            if (!user) {
+              setError('你需要登录才能创建问题');
+              return;
+            }
+
             setIsLoading(true);
+            setError(null);
+            
             try {
-              // TODO: Replace with real API call
-              console.log('Creating question:', data);
+              // Call the real API to create question
+              // JWT token is automatically included by the API client
+              // 调用真实API创建问题，JWT令牌由API客户端自动包含
+              const newQuestion = await questionsApi.create({
+                positiveOutcome: data.positiveOutcome,
+                negativeOutcome: data.negativeOutcome,
+              });
 
-              // Simulate API call
-              await new Promise(resolve => setTimeout(resolve, 1000));
+              console.log('Question created successfully:', newQuestion);
 
-              // Navigate back to profile or questions list
+              // Navigate to the profile page or questions list
+              // 导航到个人资料页面或问题列表
               router.push('/users/profile');
             } catch (error) {
               console.error('Failed to create question:', error);
+              
+              // Handle different types of errors
+              // 处理不同类型的错误
+              if (error instanceof Error) {
+                if (error.message.includes('Unauthorized') || error.message.includes('401')) {
+                  setError('认证已过期，请重新登录');
+                } else if (error.message.includes('validation') || error.message.includes('400')) {
+                  setError('输入验证失败，请检查你的内容');
+                } else {
+                  setError(`创建问题失败: ${error.message}`);
+                }
+              } else {
+                setError('创建问题时发生未知错误');
+              }
             } finally {
               setIsLoading(false);
             }
@@ -111,10 +152,10 @@ export default function CreateQuestionPage() {
                 fontWeight: '600',
                 color: '#2d3748'
               }}>
-                ✅ Good thing that happens:
+                ✅ 按下按钮会发生的好事：
               </label>
               <textarea
-                placeholder="You will be rich and famous, live in a mansion, never worry about money again..."
+                placeholder="你将变得富有和出名，住在豪宅里，再也不用担心金钱..."
                 {...register("positiveOutcome")}
                 style={{
                   width: '100%',
@@ -160,10 +201,10 @@ export default function CreateQuestionPage() {
                 fontWeight: '600',
                 color: '#2d3748'
               }}>
-                ❌ Bad thing that happens:
+                ❌ 按下按钮会发生的坏事：
               </label>
               <textarea
-                placeholder="You lose all your family members, friends abandon you, you become completely alone..."
+                placeholder="你将失去所有家人，朋友抛弃你，你会变得完全孤独..."
                 {...register("negativeOutcome")}
                 style={{
                   width: '100%',
@@ -213,7 +254,7 @@ export default function CreateQuestionPage() {
                 onClick={() => router.back()}
                 style={{ flex: 1 }}
               >
-                Cancel
+                取消
               </Button>
 
               <Button
@@ -222,7 +263,7 @@ export default function CreateQuestionPage() {
                 isLoading={isLoading}
                 style={{ flex: 1 }}
               >
-                Create Question
+                创建问题
               </Button>
             </div>
           </form>
@@ -236,8 +277,8 @@ export default function CreateQuestionPage() {
             color: '#666',
             textAlign: 'center'
           }}>
-            <strong>💡 Tip:</strong> The best questions create tough moral dilemmas.
-            Make the positive outcome tempting and the negative outcome genuinely concerning!
+            <strong>💡 提示：</strong> 最好的问题会创造艰难的道德困境。
+            让好的结果诱人，让坏的结果真正令人担忧！
           </div>
         </div>
       </div>
