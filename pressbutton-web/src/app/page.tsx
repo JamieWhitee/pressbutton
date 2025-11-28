@@ -122,6 +122,8 @@ export default function HomePage() {
 
       if (updatedQuestion) {
         setCurrentQuestion(updatedQuestion);
+        // Load comments after voting
+        fetchComments(updatedQuestion.id);
       }
     } catch (err: any) {
       console.error('Error submitting vote:', err);

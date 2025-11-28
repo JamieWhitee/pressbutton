@@ -84,7 +84,10 @@ export default function QuestionDetailsPage() {
       }
       setCommentsError(null);
 
-      const newComments = await commentsApi.getByQuestion(questionId);
+      const commentsData = await commentsApi.getByQuestion(questionId);
+
+      // Ensure commentsData is always an array
+      const newComments = Array.isArray(commentsData) ? commentsData : [];
 
       if (append) {
         setComments(prev => [...prev, ...newComments]);
