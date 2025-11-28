@@ -161,16 +161,17 @@ export const questionsApi = {
       }
 
       // Finally, return the actual questions data
-      // The data should be an array of Question objects
-      // 最后，返回实际的问题数据，数据应该是Question对象的数组
-      const questions = backendResponse.data || [];
+      // For paginated response, data is an array in the data field
+      // 最后，返回实际的问题数据，对于分页响应，数据在data字段中是一个数组
+      const questions = Array.isArray(backendResponse.data) ? backendResponse.data : [];
 
       // Log successful operation
       // 记录成功操作
       enterpriseLogger.info('Question getAll operation completed successfully', {
         authorId: authorId || 'all',
         questionCount: questions.length,
-        hasFilter: !!authorId
+        hasFilter: !!authorId,
+        hasPagination: !!backendResponse.pagination
       }, OperationType.DATA_READ);
 
       return questions;
