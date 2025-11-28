@@ -1,7 +1,7 @@
 # Netlify Configuration for PressButton Frontend
 [build]
   command = "npm run build"
-  publish = ".next"
+  publish = "out"
   base = "pressbutton-web"
 
 [build.environment]
