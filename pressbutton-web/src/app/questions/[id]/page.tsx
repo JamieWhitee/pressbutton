@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Navigation from "../../../components/Navigation";
 import { useAuth } from "../../../contexts/AuthContext";
-import { questionsApi, type Question, type VoteRequest } from "../../../lib/api/questions-new";
+import { questionsApi, type Question, type VoteData } from "../../../lib/api/questions";
 import { commentsApi, type Comment, type CreateCommentRequest } from "../../../lib/api/comments";
 
 /**
@@ -51,17 +51,12 @@ export default function QuestionDetailsPage() {
       const questionData = await questionsApi.getById(questionId);
       setQuestion(questionData);
 
-      // Check if user has voted on this question
-      if (user) {
-        try {
-          const userVote = await questionsApi.getUserVote(questionId);
-          if (userVote) {
-            setHasVoted(true);
-            setSelectedOption(userVote.choice);
-          }
-        } catch (error) {
-          // If error getting user vote, user probably hasn't voted yet
-          console.log('No existing vote found for user');
+      // Check if user has voted on this question by looking at the votes array
+      if (user && questionData.votes) {
+        const userVote = questionData.votes.find(vote => vote.userId === user.id);
+        if (userVote) {
+          setHasVoted(true);
+          setSelectedOption(userVote.choice);
         }
       }
     } catch (error) {
@@ -84,7 +79,7 @@ export default function QuestionDetailsPage() {
       }
       setCommentsError(null);
 
-      const commentsData = await commentsApi.getByQuestion(questionId);
+      const commentsData = await commentsApi.getByQuestion(String(questionId));
 
       // Ensure commentsData is always an array
       const newComments = Array.isArray(commentsData) ? commentsData : [];
@@ -167,9 +162,9 @@ export default function QuestionDetailsPage() {
     try {
       setIsSubmittingComment(true);
 
-      const commentData: CreateCommentData = {
+      const commentData: CreateCommentRequest = {
         content: newComment.trim(),
-        questionId,
+        questionId: String(questionId),
       };
 
       await commentsApi.create(commentData);

@@ -219,7 +219,7 @@ export default function HomePage() {
       setIsSubmittingComment(true);
 
       await commentsApi.create({
-        questionId: currentQuestion.id,
+        questionId: String(currentQuestion.id),
         content: newComment.trim()
       });
 
@@ -227,6 +227,12 @@ export default function HomePage() {
 
       // Reload comments to show the new one
       fetchComments(currentQuestion.id);
+
+      // Refresh question data to update comment count
+      const updatedQuestion = await questionsApi.getById(currentQuestion.id);
+      if (updatedQuestion) {
+        setCurrentQuestion(updatedQuestion);
+      }
     } catch (err: any) {
       console.error('Error submitting comment:', err);
       setError(err.message || 'Failed to submit comment. Please try again.');
