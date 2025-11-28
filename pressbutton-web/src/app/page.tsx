@@ -172,17 +172,18 @@ export default function HomePage() {
       }
       setCommentsError('');
 
-      const commentsData = await commentsApi.getByQuestionId(questionId, page, 10);
+      const commentsData = await commentsApi.getByQuestion(questionId.toString());
 
       if (commentsData) {
         if (page === 1) {
-          setComments(commentsData.comments || []);
+          setComments(commentsData || []);
         } else {
-          setComments(prev => [...prev, ...(commentsData.comments || [])]);
+          setComments(prev => [...prev, ...(commentsData || [])]);
         }
 
-        setCurrentCommentsPage(commentsData.pagination?.page || 1);
-        setTotalCommentsPages(commentsData.pagination?.totalPages || 1);
+        // Note: The API doesn't return pagination info, so we'll show all comments
+        setCurrentCommentsPage(1);
+        setTotalCommentsPages(1);
       }
     } catch (err: any) {
       console.error('Error fetching comments:', err);

@@ -84,11 +84,7 @@ export default function QuestionDetailsPage() {
       }
       setCommentsError(null);
 
-      const { comments: newComments, pagination } = await commentsApi.getByQuestionId(
-        questionId,
-        page,
-        COMMENTS_PER_PAGE
-      );
+      const newComments = await commentsApi.getByQuestion(questionId);
 
       if (append) {
         setComments(prev => [...prev, ...newComments]);
@@ -96,8 +92,9 @@ export default function QuestionDetailsPage() {
         setComments(newComments);
       }
 
-      setCurrentPage(pagination.page);
-      setTotalPages(pagination.totalPages);
+      // Note: The API doesn't return pagination info, so we'll show all comments
+      setCurrentPage(1);
+      setTotalPages(1);
     } catch (error) {
       console.error('Error fetching comments:', error);
       setCommentsError(error instanceof Error ? error.message : 'Failed to load comments');

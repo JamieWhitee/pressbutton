@@ -21,13 +21,13 @@ export default function CreateQuestionPage() {
   // 问题创建的验证模式 - 与后端验证保持一致
   const schema = yup.object({
     positiveOutcome: yup.string()
-      .required("好的结果是必需的")
-      .min(5, "请提供更多细节（至少5个字符）")
-      .max(500, "保持合理长度（最多500个字符）"),
+      .required("Positive outcome is required")
+      .min(5, "Please provide more details (at least 5 characters)")
+      .max(500, "Keep it reasonable (max 500 characters)"),
     negativeOutcome: yup.string()
-      .required("坏的结果是必需的")
-      .min(5, "请提供更多细节（至少5个字符）")
-      .max(500, "保持合理长度（最多500个字符）"),
+      .required("Negative outcome is required")
+      .min(5, "Please provide more details (at least 5 characters)")
+      .max(500, "Keep it reasonable (max 500 characters)"),
   });
 
   const { register, handleSubmit, formState: { errors } } = useForm({
@@ -73,7 +73,7 @@ export default function CreateQuestionPage() {
             backgroundClip: 'text',
             width: '100%'
           }}>
-            创建按钮困境
+            Create Button Dilemma
           </h1>
 
           <p style={{
@@ -82,7 +82,7 @@ export default function CreateQuestionPage() {
             marginBottom: '20px',
             fontSize: '1.1rem'
           }}>
-            创建一个道德困境：如果有人按下按钮，会发生什么好事和坏事？
+            Create a moral dilemma: If someone presses the button, what good and bad things will happen?
           </p>
 
           {/* Error message display / 错误消息显示 */}
@@ -96,13 +96,13 @@ export default function CreateQuestionPage() {
             // Check if user is authenticated before creating question
             // 在创建问题前检查用户是否已认证
             if (!user) {
-              setError('你需要登录才能创建问题');
+              setError('You need to login to create a question');
               return;
             }
 
             setIsLoading(true);
             setError(null);
-            
+
             try {
               // Call the real API to create question
               // JWT token is automatically included by the API client
@@ -119,19 +119,19 @@ export default function CreateQuestionPage() {
               router.push('/users/profile');
             } catch (error) {
               console.error('Failed to create question:', error);
-              
+
               // Handle different types of errors
               // 处理不同类型的错误
               if (error instanceof Error) {
                 if (error.message.includes('Unauthorized') || error.message.includes('401')) {
-                  setError('认证已过期，请重新登录');
+                  setError('Authentication expired, please login again');
                 } else if (error.message.includes('validation') || error.message.includes('400')) {
-                  setError('输入验证失败，请检查你的内容');
+                  setError('Validation failed, please check your input');
                 } else {
-                  setError(`创建问题失败: ${error.message}`);
+                  setError(`Failed to create question: ${error.message}`);
                 }
               } else {
-                setError('创建问题时发生未知错误');
+                setError('Unknown error occurred while creating question');
               }
             } finally {
               setIsLoading(false);
@@ -152,10 +152,10 @@ export default function CreateQuestionPage() {
                 fontWeight: '600',
                 color: '#2d3748'
               }}>
-                ✅ 按下按钮会发生的好事：
+                ✅ What good thing will happen if you press the button:
               </label>
               <textarea
-                placeholder="你将变得富有和出名，住在豪宅里，再也不用担心金钱..."
+                placeholder="You will become rich and famous, live in a mansion, never worry about money again..."
                 {...register("positiveOutcome")}
                 style={{
                   width: '100%',
@@ -201,10 +201,10 @@ export default function CreateQuestionPage() {
                 fontWeight: '600',
                 color: '#2d3748'
               }}>
-                ❌ 按下按钮会发生的坏事：
+                ❌ What bad thing will happen if you press the button:
               </label>
               <textarea
-                placeholder="你将失去所有家人，朋友抛弃你，你会变得完全孤独..."
+                placeholder="You will lose all your loved ones, friends will abandon you, you'll become completely alone..."
                 {...register("negativeOutcome")}
                 style={{
                   width: '100%',
@@ -254,7 +254,7 @@ export default function CreateQuestionPage() {
                 onClick={() => router.back()}
                 style={{ flex: 1 }}
               >
-                取消
+                Cancel
               </Button>
 
               <Button
@@ -263,7 +263,7 @@ export default function CreateQuestionPage() {
                 isLoading={isLoading}
                 style={{ flex: 1 }}
               >
-                创建问题
+                Create Question
               </Button>
             </div>
           </form>
@@ -277,8 +277,8 @@ export default function CreateQuestionPage() {
             color: '#666',
             textAlign: 'center'
           }}>
-            <strong>💡 提示：</strong> 最好的问题会创造艰难的道德困境。
-            让好的结果诱人，让坏的结果真正令人担忧！
+            <strong>💡 Tip:</strong> The best questions create difficult moral dilemmas.
+            Make the good outcome tempting, and the bad outcome truly worrying!
           </div>
         </div>
       </div>
