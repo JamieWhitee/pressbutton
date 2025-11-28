@@ -10,6 +10,9 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "dev": "./dev-start.sh",
+    "kill-port": "lsof -ti:3001 | xargs kill -9 || true",
+    "dev-api": "cd /Users/ibairah/vscodeprojects/pressbutton/pressbutton-api && npm run kill-port && npm run start:dev",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -18,7 +21,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed:en": "tsx prisma/seed.en.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

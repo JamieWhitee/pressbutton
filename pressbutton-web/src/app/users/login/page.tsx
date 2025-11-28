@@ -50,11 +50,11 @@ export default function LoginPage() {
           borderRadius: '20px',
           boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
           padding: '40px',
-        backdropFilter: 'blur(10px)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
+          backdropFilter: 'blur(10px)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center'
       }}>
         <h1 style={{
           fontSize: '2.5rem',
@@ -123,7 +123,6 @@ export default function LoginPage() {
           </Button>
         </form>
       </div>
-    </div>
     </div>
   );
 }

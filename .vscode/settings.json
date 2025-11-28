@@ -4,9 +4,49 @@
   ],
   "typescript.suggest.autoImports": true,
   "javascript.suggest.autoImports": true,
-    // 延迟时间（单位 ms，默认 ~1500ms）
-  "github.copilot.voice.silenceDelay": 4000,
 
-  // 关闭自动发送
-  "github.copilot.voice.autoSend": false
+  // Copilot Voice settings
+  "github.copilot.voice.silenceDelay": 4000,
+  "github.copilot.voice.autoSend": false,
+
+  // File watching exclusions to prevent EMFILE errors
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/.git/**": true,
+    "**/build/**": true,
+    "**/.next/**": true,
+    "**/coverage/**": true,
+    "**/.nyc_output/**": true,
+    "**/prisma/migrations/**": true,
+    "**/*.log": true
+  },
+
+  // Memory settings for large files
+  "files.maxMemoryForLargeFilesMB": 4096,
+  "typescript.preferences.maxFileSize": 4096,
+
+  // Search exclusions to reduce file scanning
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.next": true,
+    "**/build": true,
+    "**/coverage": true
+  },
+
+  // Reduce file system monitoring
+  "typescript.preferences.watchOptions": {
+    "watchFile": "useFsEventsOnParentDirectory",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority"
+  },
+
+  // Disable automatic type acquisition to reduce file operations
+  "typescript.disableAutomaticTypeAcquisition": true,
+
+  // Reduce extension host restarts
+  "extensions.autoUpdate": false,
+  "extensions.autoCheckUpdates": false,
+  "prisma.pinToPrisma6": true
 }

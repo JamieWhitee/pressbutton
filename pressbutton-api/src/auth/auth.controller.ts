@@ -1,4 +1,11 @@
-import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -37,6 +44,20 @@ export class AuthController {
     // 400 Bad Request: Invalid email format or password too short
     // 404 Not Found: User with email doesn't exist
     // 401 Unauthorized: Password is incorrect
+  }
+
+  // POST /api/v1/auth/guest-signup
+  // Create a temporary guest account for quick voting access
+  @Post('guest-signup')
+  async createGuestAccount(): Promise<AuthResponseDto> {
+    // No body validation needed - all guest data is auto-generated
+    // This creates a unique guest account with random credentials
+
+    return this.authService.createGuestAccount();
+    // Always returns 201 Created with:
+    // - New guest user data
+    // - JWT access token for immediate login
+    // - Guest credentials (email/password) for reference
   }
 
   // GET /api/v1/auth/profile
