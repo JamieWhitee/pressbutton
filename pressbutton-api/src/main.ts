@@ -31,7 +31,15 @@ async function bootstrap() {
     origin: corsOrigin, // Allow specific origin from env or all origins
     credentials: true, // Allow cookies and auth headers
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'X-Request-ID',
+      'X-Timestamp',
+      'X-API-Version',
+      'X-User-Agent',
+    ],
     exposedHeaders: ['Content-Range', 'X-Content-Range'],
     maxAge: 3600,
   });
