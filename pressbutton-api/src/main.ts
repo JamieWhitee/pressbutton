@@ -25,9 +25,15 @@ async function bootstrap() {
   // CORS configuration allows cross-origin requests
   // Without this, browsers would block requests from frontend to backend
   const corsOrigin = configService.get('CORS_ORIGIN') || '*';
+  console.log('CORS_ORIGIN configured as:', corsOrigin); // Debug log
+
   app.enableCors({
     origin: corsOrigin, // Allow specific origin from env or all origins
     credentials: true, // Allow cookies and auth headers
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    maxAge: 3600,
   });
 
   // Global validation pipe automatically validates incoming requests

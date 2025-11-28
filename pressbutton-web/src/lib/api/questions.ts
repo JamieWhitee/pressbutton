@@ -130,12 +130,12 @@ export const questionsApi = {
       // 构建带有可选authorId参数的URL
       const url = authorId
         ? `/questions/author/${authorId}`        // Filter by specific author using correct endpoint / 使用正确端点按特定作者过滤
-        : '/questions/all';                      // Get all questions / 获取所有问题
+        : '/questions/all?limit=100';            // Get all questions with high limit / 获取所有问题，设置较高的限制
 
       // Make the API request using your enterprise client
       // The enterprise client returns ApiResponse<T>, we need to extract the backend response
       // 使用企业级客户端发起API请求，企业客户端返回ApiResponse<T>，我们需要提取后端响应
-      const response: ApiResponse<BackendApiResponse<Question[]>> = await enterpriseApiClient.get(url);
+      const response: ApiResponse<BackendPaginatedResponse<Question>> = await enterpriseApiClient.get(url);
 
       // First, check if the enterprise client request was successful
       // 首先，检查企业级客户端请求是否成功
